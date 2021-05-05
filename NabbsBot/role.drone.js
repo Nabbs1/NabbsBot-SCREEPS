@@ -77,33 +77,8 @@ var roleDrone = {
                     }
                   break;
                 case 'getContainer':
-                    
-                            var sources = creep.room.find(FIND_STRUCTURES, {
-                                filter: (structure) => {
-                                    return (structure.structureType == STRUCTURE_CONTAINER);
-                                }
-                            });
-                            var maxAmount = -1;
-                            var maxSource = null;
-                            var maxRange = 100;
-                            for (var i = 0; i < sources.length; i++) {
-                                if (sources[i].store[RESOURCE_ENERGY] >= maxAmount) {
-                                    var range = creep.pos.getRangeTo(sources[i]);
-                                    if (sources[i].store[RESOURCE_ENERGY] > maxAmount || range < maxRange) {
-                                    maxAmount = sources[i].store[RESOURCE_ENERGY];
-                                    maxSource = sources[i];
-                                    maxRange = range;
-                                    }
-                                }
-                            }
-                   // console.log(maxAmount);
-                    if (maxAmount > creep.store.getCapacity()) {
-                        
-                        if(creep.withdraw(maxSource, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                            creep.travelTo(maxSource)
-                        }
-                    } else {
-                        creep.memory.task = 'harvestEnergy';
+                    if (creep.getContainerEnergy() == false) {
+                        creep.memory.task = 'getStorage';
                     }
                   
                     // if (creep.getContainerEnergy() == false) {

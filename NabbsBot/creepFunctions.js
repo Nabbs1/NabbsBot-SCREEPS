@@ -43,7 +43,7 @@ Creep.prototype.findEnergySource = function (stuffNthings) {
 		}
 	}
 	if (source) {
-		console.log('found new source: ', source.id, ' : ', source.energy+'<span style="color: #00FF00;font-weight: bold;"> ::: reason: '+reasonFor)
+	//	console.log('found new source: ', source.id, ' : ', source.energy+'<span style="color: #00FF00;font-weight: bold;"> ::: reason: '+reasonFor)
 		this.memory.source = source.id;
 
 		return source;

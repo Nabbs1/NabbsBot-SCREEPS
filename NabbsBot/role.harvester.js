@@ -1,3 +1,4 @@
+var mapLib = require("mapLib");
 var roleHarvester = {
 
     /** @param {Creep} creep **/
@@ -64,7 +65,7 @@ var roleHarvester = {
 
 
         }
-
+  //   console.log( mapLib.getNextClaimableRoom())
     //  let thismessage = '<span style="color: #FFFFFF; font - weight: bold; "> ::::: ' + creep.room
     //             identifyProblem(startCpu, creep, thismessage);
 

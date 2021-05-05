@@ -1,3 +1,6 @@
+const C = require("constants");
+const { size } = require("lodash");
+var mapLib = require("mapLib");
 function spawning(room) {
 	let spawns = room.find(FIND_MY_SPAWNS);
 	// //console.log(spawns);
@@ -238,22 +241,48 @@ function spawning(room) {
 	//	console.log(room.memory.colonizeNext.name.name)
 	//	console.log(room.memory.colonizeNext.score)
 
+
+
+
+	// if (creep.memory.room_dest !== undefined && creep.room.name !== room_dest) {
+      //       room_dest = creep.memory.room_dest;
+      //       var roomName = String(room_dest);
+      //       creep.moveTo(new RoomPosition(25, 25, roomName), { visualizePathStyle: { stroke: '#0000FF' } });
+      //   }
+      //   if (mapLib.getNextClaimableRoom(creep.memory.room_spawn)) {
+      //       creep.memory.room_dest = mapLib.getNextClaimableRoom(creep.memory.room_spawn);
+      //   }
+
+
+//	console.log( JSON.stringify(thisIsNextRoom),)
+//	console.log(thisIsNextRoom.room_name)
+// JSON.stringify(value),
+//console.log(mapLib.getGCLClaimsAvailable())
+const thisRoomSpawn = spawns[0]
+const myLevel = Game.gcl.level;
+const roomClaimsAvailable = mapLib.getGCLClaimsAvailable()
+const thisIsNextRoom = mapLib.getNextClaimableRoom( thisRoomSpawn );
+//console.log(myLevel+' of '+roomClaimsAvailable)
 	if (room.memory.colonizeNext) {
 		var claimRoom = room.memory.colonizeNext.name.name //null //
 		var roomScore = room.memory.colonizeNext.score;
 	}
+
+	if (roomClaimsAvailable > 0 && cLevel > 3 && thisIsNextRoom ) {
+		//console.log(claimRoom + " : score " + roomScore)
+		room.memory.creepcount.creepMax.claimerMax = 1
+	} else {
+		room.memory.creepcount.creepMax.claimerMax = 0
+	}
+
+
 	///claimer count needs to be global
 	// If(cLevel > 4 && claimRoom && roomScore > 5){
-	var myLevel = Game.gcl.level;
+
 	//checkMyRoom.length < myLevel
 	//console.log(checkMyRoom.length , myLevel)
 	// };
-	// if (checkMyRoom.length < myLevel && cLevel > 5 && claimRoom && roomScore > 4) {
-	// 	//console.log(claimRoom + " : score " + roomScore)
-	// 	room.memory.creepcount.creepMax.claimerMax = 1
-	// } else {
-	// 	room.memory.creepcount.creepMax.claimerMax = 0
-	// }
+
 
 	//	if (!room.controller.my && room.controller.owner === undefined) {
 
@@ -267,12 +296,12 @@ function spawning(room) {
 		// console.log("spawning claimer for a room this far away: ", howFarIsIt);
 		let newName = "C00-" + room.name//+ makeid(2); //Game.time;
 		let result = spawns[0].spawnCreep(getBody([CLAIM, MOVE], room), newName, {
-			memory: { role: "claimer", targetRoom: claimRoom, homeRoom: room.name },
+			memory: { role: "claimer", targetRoom: thisIsNextRoom, homeRoom: room.name },
 		});
 		//console.log('Spawning claimer:', room, result)
 
 		if (result == OK) {
-			console.log(room.name + " => spawning claimer for =>" + claimRoom + "  :  " + result);
+			console.log(room.name + " => spawning claimer for =>" + thisIsNextRoom + "  :  " + result);
 			/// set for room booters drones here
 			return;
 		}

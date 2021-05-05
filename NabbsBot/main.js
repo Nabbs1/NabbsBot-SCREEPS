@@ -1,5 +1,8 @@
 Memory.NabbsVersion = "NabbsBot"; // 5.3.2021
 var myrooms = require("rooms");
+const C = require("constants");
+const { size } = require("lodash");
+var mapLib = require("mapLib");
 var creepFunctions = require("creepFunctions");
 var roomPositionFunctions = require("roomPositionFunctions");
 var Traveler = require('Traveler');
@@ -15,8 +18,8 @@ global.ROLES = {
 	miner: require("role.miner"),
 	// upgrader: require("role.upgrader"),
 	// builder: require("role.builder"),
-	//	scout: require("role.scout"),
-	//	claimer: require("role.claimer"),
+	scout: require("role.scout"),
+	claimer: require("role.claimer"),
 
 };
 const profiler = require('screeps-profiler');
@@ -27,7 +30,25 @@ profiler.enable();
 /// MAINLOOP START  
 /// MAINLOOP START
 module.exports.loop = function () {
+	if (Game.spawns.Spawn1 !== undefined) {
+		if (!Memory.mapLib) {
+			mapLib.setRoomList([
+				{ room_name: Game.spawns.Spawn1.room.name, claim_room: false },
+			]);
+			console.log("MapLib Setup");
+			Memory.mapLib = true;
+		}
+	}
+	let mapRooms = mapLib.getRoomListClaimable();
+
+
+
+
 	profiler.wrap(function () {
+
+
+
+
 		//Game.profiler.profile(1000)
 // let start;
 // let end;
@@ -39,7 +60,7 @@ module.exports.loop = function () {
 
 
 		myrooms();
-
+	
 		//clearing memory of dead creep
 		for (var name in Memory.creeps) {
 			let creep = Game.creeps[name];
