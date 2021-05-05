@@ -27,7 +27,7 @@ var roleHarvester = {
 
             if (creep.depSpawns() == false) {
             //    if (creep.depTowers() == false) {
-                //    if (creep.depStorage() == false) {
+                if (creep.depStorage() == false) {
             creep.upCont()
                 // if (creep.upgradeController(creep.room.controller) == ERR_NOT_IN_RANGE) {
                 //     //  this dont work     creep.travelTo(creep, creep.room.controller, '#b99cfb', true);
@@ -39,7 +39,7 @@ var roleHarvester = {
                    //     }
 
               //      }
-            //    }
+          }
             }
 
 
@@ -49,12 +49,12 @@ var roleHarvester = {
             // if (creep.getDroppedEnergy() == false) {
  if (creep.getDroppedEnergy() == false) {
     if (creep.getContainerEnergy() == false) {
-           if (creep.getStorage() == false) {
+       //    if (creep.getStorage() == false) {
           
                 creep.harvestEnergy();
             }
              }
-        }
+    //    }
          //   }
             //  }
             // for (var i in hauler) {
