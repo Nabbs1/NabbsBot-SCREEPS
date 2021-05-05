@@ -66,8 +66,8 @@ var roleHarvester = {
 
         }
   //   console.log( mapLib.getNextClaimableRoom())
-    //  let thismessage = '<span style="color: #FFFFFF; font - weight: bold; "> ::::: ' + creep.room
-    //             identifyProblem(startCpu, creep, thismessage);
+     let thismessage = '<span style="color: #FFFFFF; font - weight: bold; "> ::::: ' + creep.room
+                identifyProblem(startCpu, creep, thismessage);
 
     }
 };

@@ -11,7 +11,7 @@ console.log("Building in: "+room)
     //  let SpawnLoc = Game.rooms[claimerHome].memory.colonizeNext.spawnLoc;
     //  Game.room.createConstructionSite(SpawnLoc, STRUCTURE_SPAWN)
     //   room.createConstructionSite(spawns[0].pos.x + 2, spawns[0].pos.y + 1, STRUCTURE_EXTENSION)
-    if (room.memory.colonize) {
+    if (room.memory.colonize && !spawns) {
         room.createConstructionSite(room.memory.colonize.posX, room.memory.colonize.posY, STRUCTURE_SPAWN)
 
     }

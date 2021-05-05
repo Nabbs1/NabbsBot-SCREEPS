@@ -2,12 +2,12 @@ var roleClaimer = {
 
     /** @param {Creep} creep **/
     run: function (creep) {
-        var claimerHome = creep.memory.homeRoom
-        var targetRoom = creep.memory.targetRoom
+        const claimerHome = creep.memory.homeRoom
+        const targetRoom = creep.memory.targetRoom
         // creep.memory.targetRoom = Game.flags.reserve.pos.roomName;
-        if (targetRoom && creep.memory.targetRoom !== creep.room.name) {
-            creep.travelTo(targetRoom);
-     
+        if (targetRoom && targetRoom !== creep.room.name) {
+          creep.travelToRoom(targetRoom);
+   //  console.log(creep, targetRoom)
      
         } else {
             if (creep.room.controller) {

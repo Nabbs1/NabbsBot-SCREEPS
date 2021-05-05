@@ -18,7 +18,7 @@ var roleMiner = {
                     }
                 });
                 if (closeContainer) {
-                    if (creep.pos.getRangeTo(closeContainer) < 2) {
+                    if (creep.pos.getRangeTo(closeContainer) < 3) {
                         creep.travelTo(closeContainer)
                     }
                     if (creep.pos.getRangeTo(closeContainer) == 0) {

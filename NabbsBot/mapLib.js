@@ -53,7 +53,7 @@ let mapLibFunctions = {
 		if (index > -1) {
 			mapRooms.splice(index, 1);
 			this.setRoomList(mapRooms);
-			// console.log("Removed " + roomName + " from List");
+			console.log("Removed " + roomName + " from List");
 		}
 	},
 	getNextRoom(creep) {

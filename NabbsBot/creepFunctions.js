@@ -37,13 +37,13 @@ Creep.prototype.findEnergySource = function (stuffNthings) {
 		let sources = this.room.find(FIND_SOURCES);
 		if (sources.length) {
 			source = _.find(sources, function (s) {
-				//console.log('findEnergySource:  ' , s.energy, s.pos, s.pos.getOpenPositions())
+				////console.log('findEnergySource:  ' , s.energy, s.pos, s.pos.getOpenPositions())
 				return s.pos.getOpenPositions().length > 0 && s.energy > 0;
 			});
 		}
 	}
 	if (source) {
-	//	console.log('found new source: ', source.id, ' : ', source.energy+'<span style="color: #00FF00;font-weight: bold;"> ::: reason: '+reasonFor)
+	//	//console.log('found new source: ', source.id, ' : ', source.energy+'<span style="color: #00FF00;font-weight: bold;"> ::: reason: '+reasonFor)
 		this.memory.source = source.id;
 
 		return source;
@@ -57,16 +57,16 @@ Creep.prototype.findEnergySource = function (stuffNthings) {
 createRoads = function createRoads(Flag1, Flag2) {
 	//function createRoads(Flag1, Flag2){
 	// if (Game.flags.Flag1 && Game.flags.Flag2){
-	// console.log('===================flag test', Flag1.pos.x, Flag1.pos.y)
+	// //console.log('===================flag test', Flag1.pos.x, Flag1.pos.y)
 	if (!Flag1.room) {
-		console.log("Flag1 room not visible : DELETING FLAG1");
+		//console.log("Flag1 room not visible : DELETING FLAG1");
 		Flag1.remove();
 	} else if (!Flag2.room) {
-		console.log("Flag2 room not visible : DELETING FLAG2");
+		//console.log("Flag2 room not visible : DELETING FLAG2");
 		Flag2.remove();
 	} else {
 		var path = Flag1.pos.findPathTo(Flag2.pos, { ignoreCreeps: true });
-		console.log("path: ", path);
+		//console.log("path: ", path);
 		for (var i = 0; i < path.length; i++) {
 			console.log(
 				"Building Road in ",
@@ -83,7 +83,7 @@ createRoads = function createRoads(Flag1, Flag2) {
 		Flag1.remove();
 		Flag2.remove();
 	}
-	//console.log(path)
+	////console.log(path)
 };
 // end createRoads
 
@@ -127,7 +127,7 @@ Creep.prototype.depSpawns = function depSpawns() {
 		);
 	});
 	if (spawnOrExtentions.length) {
-		let energytarget = spawnOrExtentions[0]; //this.pos.findClosestByRange(spawnOrExtentions);
+		let energytarget = this.pos.findClosestByRange(spawnOrExtentions);
 		if (this.pos.isNearTo(energytarget)) {
 			this.transfer(energytarget, RESOURCE_ENERGY);
 		} else {
@@ -163,12 +163,12 @@ Creep.prototype.depTowers = function depTowers() {
 Creep.prototype.getStorage = function getStorage() {
 	let storage = this.room.storage;
 	if (!storage) {
-		// console.log('getStorage() false')
+		// //console.log('getStorage() false')
 		return false;
 	}
 	if (storage && storage.store[RESOURCE_ENERGY] > 0) {
 		//this.store.getFreeCapacity()	) {
-		// console.log('STORAGE retrieve',this.room,this,this.room.storage.store[RESOURCE_ENERGY])
+		// //console.log('STORAGE retrieve',this.room,this,this.room.storage.store[RESOURCE_ENERGY])
 		if (this.pos.isNearTo(storage)) {
 			this.withdraw(storage, RESOURCE_ENERGY);
 		} else {
@@ -196,7 +196,7 @@ Creep.prototype.getDroppedEnergy = function getDroppedEnergy(amountD, rangeD) {
 		},
 	});
 	if (!denergy) {
-		//console.log ('GET DROPPED ENERGY FALSE');
+		////console.log ('GET DROPPED ENERGY FALSE');
 		return false;
 	}
 
@@ -210,12 +210,12 @@ Creep.prototype.getDroppedEnergy = function getDroppedEnergy(amountD, rangeD) {
 				color: "red",
 				lineStyle: "dashed",
 			});
-			//console.log('pickup:'+denergy.amount);
+			////console.log('pickup:'+denergy.amount);
 		}
 	} else {
-		//console.log ('GET DROPPED ENERGY FALSE');
+		////console.log ('GET DROPPED ENERGY FALSE');
 		return false;
-		//console.log ('GET DROPPED ENERGY FALSE');
+		////console.log ('GET DROPPED ENERGY FALSE');
 	}
 
 	return true;
@@ -246,7 +246,7 @@ Creep.prototype.getContainerEnergy = function getContainerEnergy() {
 		    }
 		}
 	  }
-	// console.log(maxAmount);
+	// //console.log(maxAmount);
 	if (maxAmount > this.store.getCapacity()) {
 	
 	if(this.withdraw(maxSource, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {

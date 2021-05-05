@@ -45,10 +45,10 @@ function spawning(room) {
 		room.memory.creepcount.special = {};
 
 
-		room.memory.creepcount.creepMax.harvesterMax = 5;
-		room.memory.creepcount.creepMax.droneMax = 0;
-		room.memory.creepcount.creepMax.minerMax = 0;
-		room.memory.creepcount.creepMax.scoutMax = 0;
+		room.memory.creepcount.creepMax.harvesterMax = 2;
+		room.memory.creepcount.creepMax.droneMax = 8;
+		room.memory.creepcount.creepMax.minerMax = 2;
+		room.memory.creepcount.creepMax.scoutMax = 1;
 		room.memory.creepcount.creepMax.claimerMax = 0;
 
 		room.memory.creepcount.creepCurrent.harvesters = 0;
@@ -60,6 +60,15 @@ function spawning(room) {
 	};
 
 	let cLevel = room.controller.level;
+	let baseNumDrone = 3;
+//  need to get open spots from somehwhere
+// dynamic drone number for room where it decreases based on controller level
+
+	
+	
+	let dynamicDroneMax = 13
+//room.memory.creepcount.creepMax.droneMax = 6;
+
 
 	let harvesterMax = room.memory.creepcount.creepMax.harvesterMax;
 	let droneMax = room.memory.creepcount.creepMax.droneMax;
@@ -106,35 +115,7 @@ function spawning(room) {
 			return;
 		}
 	}
-
-
-	if (Game.flags.Bootup) {
-		// 	creep.memory.targetRoom = Game.flags.Bootup.pos.roomName;
-
-		// }
-		///DRONE BOOTUP
-		if (cLevel > 5 && roomDrones < droneMax * 2) {
-			let newName = "D-" + makeid(2); //Game.time;
-			let result = spawns[0].spawnCreep(
-				getBody([WORK, CARRY, MOVE, MOVE], room),
-				newName,
-				{
-					memory: {
-						role: "drone",
-						targetRoom: Game.flags.Bootup.pos.roomName,
-						homeRoom: room.name,
-						task: '',
-					},
-				}
-			);
-			//console.log('Spawning harvester:', room, result)
-			if (result == OK) {
-				console.log(room + 'spawning DRONE: ' + newName)
-				return;
-			}
-		}
-	}
-	///DRONE
+///DRONE
 	if (roomDrones < droneMax && roomHarvesters) {
 		let newName = "D-" + makeid(2); //Game.time;
 		let result = spawns[0].spawnCreep(
@@ -155,6 +136,37 @@ function spawning(room) {
 			return;
 		}
 	}
+///DRONE BOOTUP
+	///DRONE BOOTUP
+	///DRONE BOOTUP
+	///DRONE BOOTUP
+	if (Game.flags.Bootup) {
+		// 	creep.memory.targetRoom = Game.flags.Bootup.pos.roomName;
+const bootTargetRoom = Game.flags.Bootup.pos.roomName
+		// }
+		///DRONE BOOTUP
+		if (cLevel > 4 && roomDrones == droneMax) {
+			let newName = "DB-"  + room.name+'_'+ makeid(2); //Game.time;
+			let result = spawns[0].spawnCreep(
+				getBody([WORK, CARRY, MOVE, MOVE], room),
+				newName,
+				{
+					memory: {
+						role: "drone",
+						targetRoom: bootTargetRoom,
+						homeRoom: bootTargetRoom,
+						task: '',
+					},
+				}
+			);
+			//console.log('Spawning harvester:', room, result)
+			if (result == OK) {
+				console.log(room + 'spawning '+newName+' DRONE: for bootup:'+bootTargetRoom)
+				return;
+			}
+		}
+	}
+	
 	//SCOUTS
 	if (roomScouts < scoutMax && cLevel > 3) {
 		let newName = "S-" + room.name//makeid(2); //Game.time;
@@ -292,16 +304,17 @@ const thisIsNextRoom = mapLib.getNextClaimableRoom( thisRoomSpawn );
 		// 	var claimRoom = Game.flags.reserve.pos.roomName;
 		// } else if (Game.flags.claim) {
 		// 	var claimRoom = Game.flags.claim.pos.roomName;
-		// }
+		// }creep, targetRoom)
+		let cTargetRoom = thisIsNextRoom.room_name
 		// console.log("spawning claimer for a room this far away: ", howFarIsIt);
 		let newName = "C00-" + room.name//+ makeid(2); //Game.time;
 		let result = spawns[0].spawnCreep(getBody([CLAIM, MOVE], room), newName, {
-			memory: { role: "claimer", targetRoom: thisIsNextRoom, homeRoom: room.name },
+			memory: { role: "claimer", targetRoom: cTargetRoom, homeRoom: room.name },
 		});
 		//console.log('Spawning claimer:', room, result)
 
 		if (result == OK) {
-			console.log(room.name + " => spawning claimer for =>" + thisIsNextRoom + "  :  " + result);
+			console.log(room.name + " => spawning claimer for =>" + cTargetRoom + "  :  " + result);
 			/// set for room booters drones here
 			return;
 		}

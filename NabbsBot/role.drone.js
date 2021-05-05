@@ -3,111 +3,140 @@ var roleDrone = {
     /** @param {Creep} creep **/
     run: function (creep) {
         var  startCpu = Game.cpu.getUsed();
-   
-        if (creep.memory.working && creep.store.getUsedCapacity() === 0) {
-            creep.memory.working = false;
-            //empty
-            creep.say('🔴Empty');
-            creep.memory.helperTarget = '';
-            creep.memory.task = 'getDropped';
-
-        }
-        if (!creep.memory.working && creep.store.getFreeCapacity() === 0) {
-            creep.memory.working = true;
-            //full
-            creep.say('🟢Full');// creep.say('🚧 filling');
-            creep.memory.targetContainerId = null;
-            creep.memory.task = 'depositSpawns';
-
-        }
-        /// setup statemachine
-        // var currentTask = creep.memory.task
-        // if (currentTask === undefined) {
-        //     currentTask = depSpawns;
-        // }
+        const targetRoom = creep.memory.targetRoom
+        //creep.memory.homeRoom =  creep.room.name
+        if (Game.flags.Bootup && Game.flags.Bootup.pos.roomName ==  creep.room.name) {
+                let spawns = creep.room.find(FIND_MY_SPAWNS);
+             //   console.log("spawn not build yet")
+                // // console.log(spawns[0])
+                if (spawns[0] != undefined) {
+ console.log("spawn construction completed, removing Bootup flag")
+                    Game.flags.Bootup.remove();
+                    creep.room.memory.mode = "normal"
+                }
+            }
 
 
-        if (creep.memory.working) {
-            const currentTask = creep.memory.task
-            switch(currentTask) {
-                case 'depositSpawns':
-                    if (creep.depSpawns() == false) {
-                        creep.memory.task = 'depositTowers';
-                    }
-                  break;
-                  case 'depositTowers':
-                    if (creep.depTowers() == false) {
-                        creep.memory.task = 'construction';
-                    }
-                    break;
+
+        // creep.memory.targetRoom = Game.flags.reserve.pos.roomName;
+        if (targetRoom && targetRoom !== creep.room.name) {
+            creep.travelToRoom(targetRoom);
+            //  console.log(creep, targetRoom)
+        } else {
+            if (creep.memory.working && creep.store.getUsedCapacity() === 0) {
+                creep.memory.working = false;
+                //empty
+                creep.say('🔴Empty');
+                creep.memory.helperTarget = '';
+                creep.memory.task = 'getDropped';
+
+            }
+            if (!creep.memory.working && creep.store.getFreeCapacity() === 0) {
+                creep.memory.working = true;
+                //full
+                creep.say('🟢Full');// creep.say('🚧 filling');
+                creep.memory.targetContainerId = null;
+                creep.memory.task = 'depositSpawns';
+
+            }
+            /// setup statemachine
+            // var currentTask = creep.memory.task
+            // if (currentTask === undefined) {
+            //     currentTask = depSpawns;
+            // }
+
+  //   let buildTaskSet = _.sum(Game.creeps, (c) => c.memory.task == "buildStuff" && c.room.name === creep.room.name);
+                //   let upgradeTaskSet = _.sum(Game.creeps, (c) => c.memory.task == "upgrade" && c.room.name === creep.room.name);
+            if (creep.memory.working) {
+                const currentTask = creep.memory.task
+                switch (currentTask) {
+                    case 'depositSpawns':
+                        if (creep.depSpawns() == false) {
+                            creep.memory.task = 'depositTowers';
+                        }
+                        break;
+                    case 'depositTowers':
+                        if (creep.depTowers() == false) {
+                            let upgradeTaskSet = _.sum(Game.creeps, (c) => c.memory.task == "upgradeController" && c.room.name === creep.room.name);
+                           // console.log(upgradeTaskSet)
+                            if (upgradeTaskSet !== 0) {
+                                creep.memory.task = 'construction';
+                            } else {
+                                  creep.memory.task = 'upgradeController';
+                            }
+                        }
+                        break;
                     case 'construction':
                         if (creep.buildStuff() == false) {
                             creep.memory.task = 'upgradeController';
                         }
-                    break;
+                        break;
                     case 'upgradeController':
                         if (creep.upCont() == false) {
                             creep.say('🚬💤')
                         }
                         break;
-                default:
-                  // no task found
-                    console.log(creep + " in " + creep.room + " ::: No task assigned so im assigning depositSpawns")
-                    creep.memory.task = 'depositSpawns';
-            }
+                    default:
+                        // no task found
+                        console.log(creep + " in " + creep.room + " ::: No task assigned so im assigning depositSpawns")
+                        creep.memory.task = 'depositSpawns';
+                }
             
   
 
 
-            // if (creep.depTowers() == false) {
-            //     if (creep.depSpawns() == false) {
-            //         if (creep.buildStuff() == false) {
-            //             creep.upCont()
-            //         }
-            //     }
-            // }
-        } else {
-//  ELSE NOT WORKING SO EMPTY
-//creep.memory.task = 'harvestEnergy';
-            const currentTask = creep.memory.task
-            switch(currentTask) {
-                case 'getDropped':
-                    if (creep.getDroppedEnergy() == false) {
-                        creep.memory.task = 'getContainer';
-                    }
-                  break;
-                case 'getContainer':
-                    if (creep.getContainerEnergy() == false) {
-                        creep.memory.task = 'getStorage';
-                    }
+                // if (creep.depTowers() == false) {
+                //     if (creep.depSpawns() == false) {
+                //         if (creep.buildStuff() == false) {
+                //             creep.upCont()
+                //         }
+                //     }
+                // }
+            } else {
+                //  ELSE NOT WORKING SO EMPTY
+                //creep.memory.task = 'harvestEnergy';
+                const currentTask = creep.memory.task
+                switch (currentTask) {
+                    case 'getDropped':
+                        if (creep.getDroppedEnergy() == false) {
+                            creep.memory.task = 'getContainer';
+                        }
+                        break;
+                    case 'getContainer':
+                        if (creep.getContainerEnergy() == false) {
+                            creep.memory.task = 'getStorage';
+                        }
                   
-                    // if (creep.getContainerEnergy() == false) {
-                    //     creep.memory.task = 'harvestEnergy';
-                    // }
-                    break;
+                        // if (creep.getContainerEnergy() == false) {
+                        //     creep.memory.task = 'harvestEnergy';
+                        // }
+                        break;
                     case 'getStorage':
                         if (creep.getStorage() == false) {
                             creep.memory.task = 'harvestEnergy';
                         }
-                    break;
+                        break;
                     case 'harvestEnergy':
                         if (creep.harvestEnergy() == false) {
                             creep.say('🚬💤')
                         }
                         break;
-                default:
-                  // no task found
-                    console.log(creep + " in " + creep.room + " ::: No task assigned so im assigning getDropped")
-                    creep.memory.task = 'getDropped';
-            }
+                    default:
+                        // no task found
+                        console.log(creep + " in " + creep.room + " ::: No task assigned so im assigning getDropped")
+                        creep.memory.task = 'getDropped';
+                }
             
 
-   }
+            }
 
-// let thismessage = '<span style="color: #FFFFFF; font - weight: bold; "> ::::: ' + creep.room
-// identifyProblem(startCpu, creep, thismessage);
-
+            let thismessage = '<span style="color: #FFFFFF; font - weight: bold; "> ::::: ' + creep.room
+            identifyProblem(startCpu, creep, thismessage);
     
+
+
+
+        }
     
     }
 };
@@ -119,7 +148,7 @@ function identifyProblem(startCpu, creep, thismessage) {
 
     const elapsed = Game.cpu.getUsed() - startCpu;
     if (elapsed> .5000) {
-        creep.say('DD'+elapsed.toFixed(4))
+       // creep.say('DD'+elapsed.toFixed(4))
         if (elapsed > 2) {
             console.log('========><span style="color: #FF0000;font-weight: bold;">Creep ' + creep + ' has used ' + elapsed.toFixed(4) + ' CPU time:  Task = ' + creep.memory.task + thismessage); //red
         } else {
