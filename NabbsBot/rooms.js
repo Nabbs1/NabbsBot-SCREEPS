@@ -15,7 +15,7 @@ function myrooms() {
 
 		let flagNameRemoteHarvest = (Game.flags[room.name])
 			if (flagNameRemoteHarvest) {
-				console.log(" flag found in room with name" + flagNameRemoteHarvest)
+			//	console.log(" flag found in room with name" + flagNameRemoteHarvest)
 				room.memory.remoteHarvestRoom = flagNameRemoteHarvest.pos.roomName
 				// let cancelRoomConstruction = Game.flags.cancel.pos.roomName;
 				// const sites = Game.rooms[cancelRoomConstruction].find(FIND_CONSTRUCTION_SITES);
@@ -37,7 +37,7 @@ function myrooms() {
 
 			var myPcent = Math.round(((Game.gcl.progress / Game.gcl.progressTotal) * 100).toFixed(2));
 			var myLevel = Game.gcl.level;
-			if ((Game.time + 2) % 50 == 0) {
+			if ((Game.time + 2) % 20 == 0) {
 				identifySources(room);
 				layout(room);
 
@@ -130,6 +130,7 @@ function identifySources(room) {
 	if (!room.memory.resources) {
 		room.memory.resources = {};
 		room.memory.resources.energy = {};
+	}
 		var allSources = room.find(FIND_SOURCES);
 		for (var source of allSources) {
 			var id = source.id;
@@ -142,7 +143,7 @@ function identifySources(room) {
 		}
 
 	}
-}
+
 function sellMarketOrder(room) {
 	// Terminal trade execution
 	if (room.terminal && Game.time % 10 == 0) {

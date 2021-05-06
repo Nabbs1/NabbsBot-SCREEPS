@@ -50,7 +50,7 @@ function spawning(room) {
 		room.memory.creepcount.creepMax.minerMax = 2;
 		room.memory.creepcount.creepMax.scoutMax = 1;
 		room.memory.creepcount.creepMax.claimerMax = 0;
-		room.memory.creepcount.creepMax.mamabirdMax = 0;
+		room.memory.creepcount.creepMax.mamabirdMax = 1;
 
 		room.memory.creepcount.creepCurrent.harvesters = 0;
 		room.memory.creepcount.creepCurrent.drones = 0;
@@ -65,7 +65,7 @@ function spawning(room) {
 //  need to get open spots from somehwhere
 // dynamic drone number for room where it decreases based on controller level
 
-	
+	//room.memory.creepcount.creepMax.mamabirdMax = 1;
 	
 	let dynamicDroneMax = 13
 //room.memory.creepcount.creepMax.droneMax = 6;
@@ -77,12 +77,22 @@ function spawning(room) {
 	let claimerMax = room.memory.creepcount.creepMax.claimerMax
 	let mamabirdMax = room.memory.creepcount.creepMax.mamabirdMax;
 
-	let roomHarvesters = _.sum(Game.creeps, (c) => c.memory.role == "harvester" && c.memory.homeRoom === room.name);
-	let roomDrones = _.sum(Game.creeps, (c) => c.memory.role == "drone" && c.memory.homeRoom === room.name);
-	let roomMiners = _.sum(Game.creeps, (c) => c.memory.role == "miner" && c.memory.homeRoom === room.name);
-	let roomScouts = _.sum(Game.creeps, (c) => c.memory.role == "scout" && c.memory.homeRoom === room.name);
-	let roomClaimers = _.sum(Game.creeps, (c) => c.memory.role == "claimer" && c.memory.homeRoom === room.name);
-	let roomMamabirds = _.sum(Game.creeps, (c) => c.memory.role == "mamabird" && c.memory.homeRoom === room.name);
+//	let roomHarvesters = _.sum(Game.creeps, (c) => c.memory.role == "harvester" && c.memory.homeRoom === room.name);
+	// let roomDrones = _.sum(Game.creeps, (c) => c.memory.role == "drone" && c.memory.homeRoom === room.name);
+	// let roomMiners = _.sum(Game.creeps, (c) => c.memory.role == "miner" && c.memory.homeRoom === room.name);
+	// let roomScouts = _.sum(Game.creeps, (c) => c.memory.role == "scout" && c.memory.homeRoom === room.name);
+	// let roomClaimers = _.sum(Game.creeps, (c) => c.memory.role == "claimer" && c.memory.homeRoom === room.name);
+	// let roomMamabirds = _.sum(Game.creeps, (c) => c.memory.role == "mamabird" && c.memory.homeRoom === room.name);
+
+	let roomHarvesters = _(Memory.creeps).filter({ role: 'harvester', homeRoom: room.name }).size();
+	let roomDrones = _(Memory.creeps).filter({ role: 'drone', homeRoom: room.name }).size();
+	let roomMiners = _(Memory.creeps).filter({ role: 'miner', homeRoom: room.name }).size();
+	let roomScouts = _(Memory.creeps).filter({ role: 'scout', homeRoom: room.name }).size();
+	let roomClaimers = _(Memory.creeps).filter({ role: 'claimer' }).size();
+	let roomMamabirds = _(Memory.creeps).filter({ role: 'mamabird', homeRoom: room.name }).size();
+	
+
+
 
 	room.memory.creepcount.creepCurrent.harvesters = roomHarvesters;
 	room.memory.creepcount.creepCurrent.drones = roomDrones;
@@ -93,13 +103,6 @@ function spawning(room) {
 
 
 
-///RoomBooters
-	let roomBooters
-	let bootTargetRoom
-	if (Game.flags.Bootup) {
-		 bootTargetRoom = Game.flags.Bootup.pos.roomName
-		 roomBooters = _.sum(Game.creeps, (c) => c.memory.role == "drone" && c.memory.homeRoom === bootTargetRoom);
-	}
 
 
 
@@ -128,6 +131,7 @@ function spawning(room) {
 		if (result == OK) {
 			console.log(room + ' spawning harvester: ' + newName)
 			//room.memory.creepcount.roomHarvesters = room.memory.creepcount.roomHarvesters + 1;
+
 			return;
 		}
 	}
@@ -157,7 +161,20 @@ function spawning(room) {
 	///DRONE BOOTUP
 	///DRONE BOOTUP
 	///DRONE BOOTUP
+
+
 	if (Game.flags.Bootup) {
+		///RoomBooters
+	let roomBooters
+	let bootTargetRoom
+
+		bootTargetRoom = Game.flags.Bootup.pos.roomName
+		let bootMinerTargetRoom = Game.flags.Bootup.room
+		roomBooters = _(Memory.creeps).filter({ role: 'drone', homeRoom: bootTargetRoom }).size();
+			roomMineBooters = _(Memory.creeps).filter({ role: 'miner', homeRoom: bootTargetRoom }).size();
+	//	roomBooters = _.sum(Game.creeps, (c) => c.memory.role == "drone" && c.memory.homeRoom === bootTargetRoom);
+
+
 		// 	creep.memory.targetRoom = Game.flags.Bootup.pos.roomName;
 
 		// }
@@ -183,7 +200,76 @@ function spawning(room) {
 				return;
 			}
 		}
-	}
+		///DRONE BOOTUP MINER need a way to cap this.
+//THIS WORKS
+		//THIS WORKS
+		//THIS WORKS
+		// if (Game.flags.testFlag) {      //THIS WORKS
+
+	// 	testFlagRoom = Game.flags.testFlag.room
+	// 	console.log(testFlagRoom + '  ' + room)
+	
+	// 	console.log(bootMinerTargetRoom.memory.resources.energy.source_0)
+	// 		console.log(bootMinerTargetRoom.memory.resources.energy.source_1)
+	// 		//console.log(testFlagRoom)
+	// }
+		
+		
+		
+		if (roomMineBooters < 2 && cLevel > 4) {
+		let minerSource_0 = _.sum(Game.creeps, (c) => c.memory.mineTarget == "source_0" && c.memory.targetRoom === bootTargetRoom);
+		let minerSource_1 = '';
+
+		if (!minerSource_0) {
+			let sourceID = bootMinerTargetRoom.memory.resources.energy.source_0
+			var newName = "M00" + room.name// + makeid(2);
+			let result = spawns[0].spawnCreep(
+				[WORK, WORK, WORK, WORK, WORK, MOVE],
+				newName,
+				{
+					memory: {
+						role: "miner",
+						source: sourceID,
+						targetRoom: bootTargetRoom,
+						homeRoom: bootTargetRoom,
+						task: 'StripMine',
+						mineTarget: 'source_0',
+					},
+				}
+			);
+			//console.log('Spawning energyMiner:', room,source, result)
+			if (result == OK) {
+				console.log(room + 'spawning MINER 00:  for room '+bootMinerTargetRoom)
+				return;
+			}
+		} else {
+			let sourceID = bootMinerTargetRoom.memory.resources.energy.source_1
+			var newName = "M01" + room.name// + makeid(2);
+			let result = spawns[0].spawnCreep(
+				[WORK, WORK, WORK, WORK, WORK, MOVE],
+				newName,
+				{
+					memory: {
+						role: "miner",
+						source: sourceID,
+						targetRoom: bootTargetRoom,
+						homeRoom: bootTargetRoom,
+						task: 'StripMine',
+						mineTarget: 'source_1',
+					},
+				}
+			);
+			//console.log('Spawning energyMiner:', room,source, result)
+			if (result == OK) {
+				console.log(room + 'spawning MINER 01: for room '+bootMinerTargetRoom)
+				return;
+			}
+		}
+	} // end miner
+
+
+
+	} //end of bootup
 	
 	//SCOUTS
 	if (roomScouts < scoutMax && cLevel > 3) {

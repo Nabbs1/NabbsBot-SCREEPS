@@ -1,4 +1,4 @@
-Memory.NabbsVersion = "NabbsBot"; // 5.3.2021
+Memory.NabbsVersion = "NabbsBot"; // 5.6.2021
 var myrooms = require("rooms");
 const C = require("constants");
 const { size } = require("lodash");

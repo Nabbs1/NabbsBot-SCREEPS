@@ -2,7 +2,14 @@ var roleDrone = {
 
     /** @param {Creep} creep **/
     run: function (creep) {
-        var  startCpu = Game.cpu.getUsed();
+        var startCpu = Game.cpu.getUsed();
+
+        if (creep.pos.x * creep.pos.y === 0 || creep.pos.x === 49 || creep.pos.y === 49) {
+            creep.travelTo(new RoomPosition(25, 25, creep.memory.targetRoom));
+        }
+        
+
+
         const targetRoom = creep.memory.targetRoom
         //creep.memory.homeRoom =  creep.room.name
         if (Game.flags.Bootup && Game.flags.Bootup.pos.roomName ==  creep.room.name) {
@@ -16,10 +23,11 @@ var roleDrone = {
                 }
             }
 
-        if (Game.flags.Bootup && Game.flags.Bootup.pos.roomName == targetRoom && targetRoom !== creep.room.name) {
+        //if (Game.flags.Bootup && Game.flags.Bootup.pos.roomName == targetRoom && targetRoom !== creep.room.name) {
           
-            creep.travelTo(Game.flags.Bootup, { useFindRoute: true, ensurePath: true, range: '2' });
-        } else if (targetRoom && targetRoom !== creep.room.name) {
+          //  creep.travelTo(Game.flags.Bootup, { ensurePath: true, range: '2' });
+        //} else
+            if (targetRoom && targetRoom !== creep.room.name) {
             const goHere = new RoomPosition(25, 25, targetRoom);
             creep.travelTo(goHere, { useFindRoute: true, ensurePath: true, range: '2' });
             //creep.travelToRoom(targetRoom);
@@ -50,15 +58,20 @@ var roleDrone = {
             if (creep.memory.working) {
                 
                 let roomMamabirds = _.sum(Game.creeps, (c) => c.memory.role == "mamabird"  && c.room.name === creep.room.name);
-                let upgradeTaskSet = _.sum(Game.creeps, (c) => c.memory.task == "upgradeController" && c.room.name === creep.room.name);
+             //   let upgradeTaskSet = _.sum(Game.creeps, (c) => c.memory.task == "upgradeController" && c.room.name === creep.room.name);
+                //_(Game.creeps).filter( { memory: { role: 'x' } } ).size();
                 // console.log(upgradeTaskSet)
-              
+              // Using Memory.creeps
+                let upgradeTaskSet = _(Memory.creeps).filter({ task: 'upgradeController', homeRoom: creep.room.name }).size();
+                 let Miners = _(Memory.creeps).filter({ role: 'miner', homeRoom: creep.room.name }).size();
+         //  console.log(creep+ creep.room+'<span style="color: #FFFFFF; font - weight: bold; "> :::::'+countTest)
 
                 const currentTask = creep.memory.task
                 switch (currentTask) {
                     case 'depositSpawns':
-                      
-                        if (roomMamabirds < 1) {
+                        if (upgradeTaskSet < 1) {
+                                creep.memory.task = 'upgradeController';
+                        } else if (roomMamabirds < 1) {
                             if (creep.depSpawns() == false) {
                                 creep.memory.task = 'depositTowers';
                             }
@@ -84,16 +97,19 @@ var roleDrone = {
                         }
                         break;
                     case 'depStorage':
-                        let storeUsed =creep.room.storage.store.getUsedCapacity();
-                       // console.log(storeUsed)
-                        if (storeUsed > 200000) {
-                            creep.memory.task = 'upgradeController';
-                        } else {
-                            if (creep.depStorage() == false) {
+                        if (creep.room.store) {
+                            let storeUsed = creep.room.storage.store.getUsedCapacity();
+                            // console.log(storeUsed)
+                            if (storeUsed > 200000) {
                                 creep.memory.task = 'upgradeController';
+                            } else {
+                                if (creep.depStorage() == false) {
+                                    creep.memory.task = 'upgradeController';
+                                }
                             }
+                        } else {
+                            creep.memory.task = 'upgradeController';
                         }
-                           
                             break;
                         
                     case 'upgradeController':
@@ -137,16 +153,19 @@ var roleDrone = {
                         // }
                         break;
                     case 'getStorage':
-                        let storeUsed =creep.room.storage.store.getUsedCapacity();
-                        // console.log(storeUsed)
-                        if (storeUsed < 100000) {
-                            creep.memory.task = 'harvestEnergy';
-                        } else {
-                            if (creep.getStorage() == false) {
+                        if (creep.room.store) {
+                            let storeUsed = creep.room.storage.store.getUsedCapacity();
+                            // console.log(storeUsed)
+                            if (storeUsed < 100000) {
                                 creep.memory.task = 'harvestEnergy';
+                            } else {
+                                if (creep.getStorage() == false) {
+                                    creep.memory.task = 'harvestEnergy';
+                                }
                             }
+                        } else {
+                                creep.memory.task = 'harvestEnergy';
                         }
-                       
                         break;
                     case 'harvestEnergy':
                         if (creep.harvestEnergy() == false) {

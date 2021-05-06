@@ -279,6 +279,12 @@ Creep.prototype.getContainerEnergy = function getContainerEnergy() {
 		}
 	  }
 	// //console.log(maxAmount);
+	if (!sources.length) {
+	return false;
+}
+
+
+
 	if (maxAmount > this.store.getCapacity()) {
 	
 	if(this.withdraw(maxSource, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {

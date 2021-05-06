@@ -4,6 +4,11 @@ var roleClaimer = {
     run: function (creep) {
         const claimerHome = creep.memory.homeRoom
         const targetRoom = creep.memory.targetRoom
+        
+        if (creep.pos.x * creep.pos.y === 0 || creep.pos.x === 49 || creep.pos.y === 49) {
+            creep.travelTo(new RoomPosition(25, 25, creep.memory.targetRoom));
+        }
+        
         // creep.memory.targetRoom = Game.flags.reserve.pos.roomName;
         if (targetRoom && targetRoom !== creep.room.name) {
          //   creep.travelTo(targetRoom); 
@@ -41,7 +46,7 @@ var roleClaimer = {
 
                     // } 
                     let constructionTargets = creep.room.find(FIND_CONSTRUCTION_SITES);
-                    if (!constructionTargets) {
+                    if (!constructionTargets.length) {
                        	if (Game.flags.Bootup) {
                             var result = creep.room.createConstructionSite(SpawnLocX,SpawnLocY,STRUCTURE_SPAWN)
                         }
