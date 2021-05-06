@@ -132,7 +132,7 @@ function identifySources(creepRoom) {
 			let sourceIndex = 'source_' + allSources.indexOf(source);
 			//console.log('source_' + allSources.indexOf(source), ' : ', id);
 			creepRoom.memory.resources.energy[sourceIndex] = id
-			console.log(creep+' : setting source in room memory - '+ creepRoom+' : ' + allSources.indexOf(source), ' : ', id)
+			console.log(' setting source in room memory - '+ creepRoom+' : ' + allSources.indexOf(source), ' : ', id)
 			//console.log(allSources.indexOf(source),' : ',id); // 0
 			// save the ID somewhere
 		}

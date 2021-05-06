@@ -69,7 +69,6 @@ function spawning(room) {
 	let dynamicDroneMax = 13
 //room.memory.creepcount.creepMax.droneMax = 6;
 
-
 	let harvesterMax = room.memory.creepcount.creepMax.harvesterMax;
 	let droneMax = room.memory.creepcount.creepMax.droneMax;
 	let minerMax = room.memory.creepcount.creepMax.minerMax;
@@ -88,6 +87,16 @@ function spawning(room) {
 	room.memory.creepcount.creepCurrent.miners = roomMiners;
 	room.memory.creepcount.creepCurrent.scouts = roomScouts;
 	room.memory.creepcount.creepCurrent.claimers = roomClaimers;
+
+///RoomBooters
+	let roomBooters
+	let bootTargetRoom
+	if (Game.flags.Bootup) {
+		 bootTargetRoom = Game.flags.Bootup.pos.roomName
+		 roomBooters = _.sum(Game.creeps, (c) => c.memory.role == "drone" && c.memory.homeRoom === bootTargetRoom);
+	}
+
+
 
 	/// if all spawns are busy dump out of function
 	if (!spawns.length) {
@@ -142,10 +151,10 @@ function spawning(room) {
 	///DRONE BOOTUP
 	if (Game.flags.Bootup) {
 		// 	creep.memory.targetRoom = Game.flags.Bootup.pos.roomName;
-const bootTargetRoom = Game.flags.Bootup.pos.roomName
+
 		// }
-		///DRONE BOOTUP
-		if (cLevel > 4 && roomDrones == droneMax) {
+		///DRONE BOOTUP  need a way to cap this.
+		if (cLevel > 2 && roomBooters < 8) {
 			let newName = "DB-"  + room.name+'_'+ makeid(2); //Game.time;
 			let result = spawns[0].spawnCreep(
 				getBody([WORK, CARRY, MOVE, MOVE], room),
@@ -161,7 +170,7 @@ const bootTargetRoom = Game.flags.Bootup.pos.roomName
 			);
 			//console.log('Spawning harvester:', room, result)
 			if (result == OK) {
-				console.log(room + 'spawning '+newName+' DRONE: for bootup:'+bootTargetRoom)
+				console.log('<span style="color: #00FF00;font-weight: bold;">'+ room + 'spawning '+newName+' RoomBooter Drone: for bootup:'+bootTargetRoom)
 				return;
 			}
 		}
@@ -308,7 +317,7 @@ const thisIsNextRoom = mapLib.getNextClaimableRoom( thisRoomSpawn );
 		let cTargetRoom = thisIsNextRoom.room_name
 		// console.log("spawning claimer for a room this far away: ", howFarIsIt);
 		let newName = "C00-" + room.name//+ makeid(2); //Game.time;
-		let result = spawns[0].spawnCreep(getBody([CLAIM, MOVE], room), newName, {
+		let result = spawns[0].spawnCreep([CLAIM, MOVE], newName, {
 			memory: { role: "claimer", targetRoom: cTargetRoom, homeRoom: room.name },
 		});
 		//console.log('Spawning claimer:', room, result)
@@ -331,7 +340,10 @@ module.exports = spawning;
 function getBody(segment, room) {
 	let body = [];
 	let level = room.controller.level;
-	let MaxPartsforCreep = 20//4 * level + level; //4*level;  //32 max with this math. probably should change to 4*level+level.  for a 40 part max at level 8.  50 max because at higher room levels you have so much energy it trys to make like 62 part creeps and game has a 50 cap
+	let MaxPartsforCreep = (5 * level) + level;  //   20//4 * level + level; //4*level;  //32 max with this math.
+	//probably should change to 4 * level + level.for a 40 part max at level 8.  4*8+8
+	//50 max because at higher room levels you have so much energy it trys to make like 
+	///62 part creeps and game has a 50 cap
 
 	//how much each segment costs
 	let segmentCost = _.sum(segment, (s) => BODYPART_COST[s]);

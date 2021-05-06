@@ -10,19 +10,23 @@ var roleDrone = {
              //   console.log("spawn not build yet")
                 // // console.log(spawns[0])
                 if (spawns[0] != undefined) {
- console.log("spawn construction completed, removing Bootup flag")
+                    console.log("spawn construction completed, removing Bootup flag")
                     Game.flags.Bootup.remove();
                     creep.room.memory.mode = "normal"
                 }
             }
 
-
-
-        // creep.memory.targetRoom = Game.flags.reserve.pos.roomName;
-        if (targetRoom && targetRoom !== creep.room.name) {
-            creep.travelToRoom(targetRoom);
+        if (Game.flags.Bootup && Game.flags.Bootup.pos.roomName == targetRoom && targetRoom !== creep.room.name) {
+          
+            creep.travelTo(Game.flags.Bootup, { useFindRoute: true, ensurePath: true, range: '2' });
+        } else if (targetRoom && targetRoom !== creep.room.name) {
+            const goHere = new RoomPosition(25, 25, targetRoom);
+            creep.travelTo(goHere, { useFindRoute: true, ensurePath: true, range: '2' });
+            //creep.travelToRoom(targetRoom);
             //  console.log(creep, targetRoom)
         } else {
+
+  
             if (creep.memory.working && creep.store.getUsedCapacity() === 0) {
                 creep.memory.working = false;
                 //empty
@@ -39,15 +43,15 @@ var roleDrone = {
                 creep.memory.task = 'depositSpawns';
 
             }
-            /// setup statemachine
-            // var currentTask = creep.memory.task
-            // if (currentTask === undefined) {
-            //     currentTask = depSpawns;
-            // }
 
-  //   let buildTaskSet = _.sum(Game.creeps, (c) => c.memory.task == "buildStuff" && c.room.name === creep.room.name);
-                //   let upgradeTaskSet = _.sum(Game.creeps, (c) => c.memory.task == "upgrade" && c.room.name === creep.room.name);
+
+            //   let buildTaskSet = _.sum(Game.creeps, (c) => c.memory.task == "buildStuff" && c.room.name === creep.room.name);
+            //   let upgradeTaskSet = _.sum(Game.creeps, (c) => c.memory.task == "upgrade" && c.room.name === creep.room.name);
             if (creep.memory.working) {
+                
+         
+
+
                 const currentTask = creep.memory.task
                 switch (currentTask) {
                     case 'depositSpawns':
@@ -58,11 +62,11 @@ var roleDrone = {
                     case 'depositTowers':
                         if (creep.depTowers() == false) {
                             let upgradeTaskSet = _.sum(Game.creeps, (c) => c.memory.task == "upgradeController" && c.room.name === creep.room.name);
-                           // console.log(upgradeTaskSet)
+                            // console.log(upgradeTaskSet)
                             if (upgradeTaskSet !== 0) {
                                 creep.memory.task = 'construction';
                             } else {
-                                  creep.memory.task = 'upgradeController';
+                                creep.memory.task = 'upgradeController';
                             }
                         }
                         break;
@@ -82,7 +86,7 @@ var roleDrone = {
                         creep.memory.task = 'depositSpawns';
                 }
             
-  
+           
 
 
                 // if (creep.depTowers() == false) {
@@ -135,8 +139,8 @@ var roleDrone = {
     
 
 
-
         }
+        
     
     }
 };

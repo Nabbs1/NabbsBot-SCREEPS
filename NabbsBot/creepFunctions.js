@@ -52,6 +52,38 @@ Creep.prototype.findEnergySource = function (stuffNthings) {
 // end findEnergySource
 
 
+createRoadsFlags= function createRoadsFlags(Flag1, Flag2) {
+	//function createRoads(Flag1, Flag2){
+	// if (Game.flags.Flag1 && Game.flags.Flag2){
+	// //console.log('===================flag test', Flag1.pos.x, Flag1.pos.y)
+	if (!Flag1.room) {
+		//console.log("Flag1 room not visible : DELETING FLAG1");
+		Flag1.remove();
+	} else if (!Flag2.room) {
+		//console.log("Flag2 room not visible : DELETING FLAG2");
+		Flag2.remove();
+	} else {
+		var path = Flag1.pos.findPathTo(Flag2.pos, { ignoreCreeps: true });
+		//console.log("path: ", path);
+		for (var i = 0; i < path.length; i++) {
+			console.log(
+				"Building Road in ",
+				Flag1.room,
+				path[i].x,
+				path[i].y,
+				path[i]
+			);
+			Flag1.room.createConstructionSite(path[i].x, path[i].y, STRUCTURE_ROAD); //works
+			//createConstructionSite(10, 15, STRUCTURE_ROAD);
+
+			//const sites = Game.rooms['W43N39'].find(FIND_CONSTRUCTION_SITES); for (const site of sites) { site.remove(); }
+		}
+		Flag1.remove();
+		Flag2.remove();
+	}
+	////console.log(path)
+};
+// end createRoads
 
 
 createRoads = function createRoads(Flag1, Flag2) {
@@ -267,23 +299,31 @@ Creep.prototype.getContainerEnergy = function getContainerEnergy() {
 
 
 
+// Creep.prototype.buildStuff = function buildStuff() {
+// 	var targets = this.room.find(FIND_CONSTRUCTION_SITES);
+// 	if (targets.length) {
+// 		targets.sort(function (a, b) {
+// 			return a.progress > b.progress ? -1 : 1;
+// 		});
+// 		if (this.build(targets[0]) == ERR_NOT_IN_RANGE) {
+// 			this.travelTo(targets[0], { reusePath: 10 });
+// 		}
+// 	} else {
+// 		return false;
+// 	}
+// };
+
 Creep.prototype.buildStuff = function buildStuff() {
-	var targets = this.room.find(FIND_CONSTRUCTION_SITES);
-	if (targets.length) {
-		targets.sort(function (a, b) {
-			return a.progress > b.progress ? -1 : 1;
-		});
-		if (this.build(targets[0]) == ERR_NOT_IN_RANGE) {
-			this.travelTo(targets[0], { reusePath: 10 });
-		}
-	} else {
-		return false;
+var targets = this.room.find(FIND_CONSTRUCTION_SITES);
+if (targets.length) {
+	dest = this.pos.findClosestByPath(targets);
+	if (this.build(dest) == ERR_NOT_IN_RANGE) {
+		this.travelTo(dest);
 	}
+} else {
+	return false;
+}
 };
-
-
-
-
 
 
 Creep.prototype.repairWall = function repairWall() {
@@ -340,7 +380,7 @@ Creep.prototype.repairStuff = function repairStuff() {
 Creep.prototype.upCont = function upCont() {
 	let cont = this.room.controller;
 	if (cont) {
-		this.travelTo(cont, { range: '2' });
+		this.travelTo(cont, { range: '3' });
 		this.upgradeController(cont);
 		// if (this.pos.isNearTo(cont)) {
 		// 	this.upgradeController(cont);

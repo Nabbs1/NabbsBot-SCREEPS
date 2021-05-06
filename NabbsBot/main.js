@@ -106,7 +106,7 @@ module.exports.loop = function () {
 //    console.log("CPU - ", end-start);
 // }
 if (Game.flags.Flag1 && Game.flags.Flag2) {
-	createRoads(Game.flags.Flag1, Game.flags.Flag2);
+	createRoadsFlags(Game.flags.Flag1, Game.flags.Flag2);
 	// console.log(Game.flags.Flag1,'===================flag test')
 }
 if (Game.flags.cancel) {

@@ -2,6 +2,7 @@ var NabbsVersion = Memory.NabbsVersion;
 var roomDefense = require("rooms.defense");
 var spawning = require("rooms.spawning");
 var layout = require("rooms.layout");
+var mapLib = require("mapLib");
 var showVisuals = true;
 function myrooms() {
 
@@ -44,6 +45,7 @@ function myrooms() {
 			spawning(room);
 
 			if (showVisuals == true) {
+
 				if (room.storage) {
 					let storeUsed = room.storage.store.getUsedCapacity();
 					let storeMax = room.storage.store.getCapacity();
@@ -59,9 +61,16 @@ function myrooms() {
 					var scoreActual = topSize - (topDistance * 0.50)
 					//	console.log(scoreActual)
 					// var actualScore = Spawnvalues[0] - (roomDistancePath.length / 2)
-					room.visual.text("Expansion Target: " + topScoreName.name + " || size: " + topSize + " || Distance : " + topDistance + ' || SCORE ACTUAL: ' + scoreActual, Memory.visLocX, Memory.visLocY + 3, { align: "left", opacity: 0.5, color: "white", stroke: "black" });
+				//	room.visual.text("Expansion Target: " + topScoreName.name + " || size: " + topSize + " || Distance : " + topDistance + ' || SCORE ACTUAL: ' + scoreActual, Memory.visLocX, Memory.visLocY + 3, { align: "left", opacity: 0.5, color: "white", stroke: "black" });
 				}
-
+				let spawns = room.find(FIND_MY_SPAWNS);
+				if (spawns.length) {
+					let checkForNext = mapLib.getNextClaimableRoom(spawns[0]);
+					let  nextClaimRoom = checkForNext.room_name+' | spawn area:'+checkForNext.areaToBuild+' | source spots:'+checkForNext.sourcePoints
+					     room.visual.text("Next Claim: " + nextClaimRoom, Memory.visLocX, Memory.visLocY + 3, { align: "left", opacity: 0.5, color: "white", stroke: "black" });
+			     
+				}
+			
 				//	let totalCreeps = _.sum(Game.creeps, (c) =>  c.memory.homeRoom === room.name);
 				room.visual.text("GCL: " + myLevel + " 🦄 " + myPcent + "% ", 46, 2, { font: "bold 1.5 HELVETICA", align: "right", opacity: 1, color: "white", stroke: "black", strokeWidth: 0.25 });
 

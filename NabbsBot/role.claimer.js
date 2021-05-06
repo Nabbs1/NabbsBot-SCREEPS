@@ -6,9 +6,15 @@ var roleClaimer = {
         const targetRoom = creep.memory.targetRoom
         // creep.memory.targetRoom = Game.flags.reserve.pos.roomName;
         if (targetRoom && targetRoom !== creep.room.name) {
-          creep.travelToRoom(targetRoom);
-   //  console.log(creep, targetRoom)
-     
+         //   creep.travelTo(targetRoom); 
+           // var pos = new RoomPosition(<x>, <y>, <roomName>);
+         //  const goHereX =  Game.rooms[targetRoom].memory.colonize.posX
+        //   const goHereY = Game.rooms[targetRoom].memory.colonize.posY
+            const goHere = new RoomPosition(25, 25, targetRoom);
+            creep.travelTo(goHere, {useFindRoute: true, ensurePath: true,range: '2' });
+           // creep.travelToRoom(targetRoom);
+            //  console.log(creep, targetRoom)
+             
         } else {
             if (creep.room.controller) {
                 if (creep.claimController(creep.room.controller) == ERR_NOT_IN_RANGE) {
@@ -24,24 +30,28 @@ var roleClaimer = {
                 }
                 // let roomScore = room.memory.colonizeNext.score;
                 if (creep.room.controller.my) {
-
+                    Game.rooms[targetRoom].memory.mode = "Bootup"
                     //Set some flag to boot room.
-                    const SpawnLoc = Game.rooms[claimerHome].memory.colonizeNext.spawnLoc;
-                    // Game.room.createFlag(SpawnLoc, 'Bootup');
-
+                    var SpawnLocX = creep.room.memory.colonize.posX
+                    var SpawnLocY = creep.room.memory.colonize.posY
+                    //Game.rooms[claimerHome].memory.colonizeNext.spawnLoc;
+                    creep.room.createFlag(SpawnLocX+3,SpawnLocY , 'Bootup');
+                   
                     // if (Game.flags.Bootup && Game.flags.Bootup.pos.roomName == creep.room.name) {
 
                     // } 
-                    var constructionTargets = creep.room.find(FIND_CONSTRUCTION_SITES);
+                    let constructionTargets = creep.room.find(FIND_CONSTRUCTION_SITES);
                     if (!constructionTargets) {
-                        if (SpawnLoc && Game.rooms[targetRoom].memory.mode != "Bootup") {
-                            var result = creep.room.createConstructionSite(SpawnLoc, STRUCTURE_SPAWN)
+                       	if (Game.flags.Bootup) {
+                            var result = creep.room.createConstructionSite(SpawnLocX,SpawnLocY,STRUCTURE_SPAWN)
                         }
-                        console.log(creep + " attempting to build a spawn in room: " + creep.room + " result: " + result)
+                        console.log('<span style="color: #800080;font-weight: bold;">'+creep + " attempting to build a spawn in room: " + creep.room + " result: " + result)
                     }
-                    creep.room.createFlag(25, 25, 'Bootup');
+
+                    //'<span style="color: #800080;font-weight: bold;">'
+                   // creep.room.createFlag(25, 25, 'Bootup');
                     //Game.rooms[claimerHome].memory.colonizeNext.score = 0;
-                    Game.rooms[targetRoom].memory.mode = "Bootup"
+                    
                     //  console.log("Room is mine"+ Game.rooms[claimerHome].memory.colonizeNext.spawnLoc)
                     //   var constructionTargets = creep.room.find(FIND_CONSTRUCTION_SITES);
                     //console.log(creep.pos.x)
