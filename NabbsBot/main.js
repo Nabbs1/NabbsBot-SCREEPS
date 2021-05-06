@@ -16,6 +16,7 @@ global.ROLES = {
 	drone: require("role.drone"),
 	harvester: require("role.harvester"),
 	miner: require("role.miner"),
+	mamabird: require("role.mamabird"),
 	// upgrader: require("role.upgrader"),
 	// builder: require("role.builder"),
 	scout: require("role.scout"),

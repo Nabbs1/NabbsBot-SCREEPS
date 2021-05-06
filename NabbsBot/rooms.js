@@ -13,6 +13,18 @@ function myrooms() {
 				Memory.MyRooms = [];
 			}
 
+		let flagNameRemoteHarvest = (Game.flags[room.name])
+			if (flagNameRemoteHarvest) {
+				console.log(" flag found in room with name" + flagNameRemoteHarvest)
+				room.memory.remoteHarvestRoom = flagNameRemoteHarvest.pos.roomName
+				// let cancelRoomConstruction = Game.flags.cancel.pos.roomName;
+				// const sites = Game.rooms[cancelRoomConstruction].find(FIND_CONSTRUCTION_SITES);
+				// for (const site of sites) { site.remove(); }
+				// Game.flags.cancel.remove();
+			}
+
+
+
 			const RoomLevel = room.controller.level;
 
 			if (RoomLevel > 7) {
@@ -129,5 +141,38 @@ function identifySources(room) {
 			// save the ID somewhere
 		}
 
+	}
+}
+function sellMarketOrder(room) {
+	// Terminal trade execution
+	if (room.terminal && Game.time % 10 == 0) {
+		if (
+			room.terminal.store[RESOURCE_ENERGY] >= 2000 &&
+			room.terminal.store[RESOURCE_HYDROGEN] >= 2000
+		) {
+			var orders = Game.market.getAllOrders(
+				(order) =>
+					order.resourceType == RESOURCE_HYDROGEN &&
+					order.type == ORDER_BUY &&
+					Game.market.calcTransactionCost(
+						200,
+						room.name,
+						order.roomName
+					) < 400
+			);
+			console.log("Hydrogen buy orders found: " + orders.length);
+			orders.sort(function (a, b) {
+				return b.price - a.price;
+			});
+			console.log("Best price: " + orders[0].price);
+			if (orders[0].price > 0.200) {
+				var result = Game.market.deal(orders[0].id, 200, room.name);
+				if (result == 0) {
+					console.log("Order completed successfully");
+				} else {
+					console.log(result)
+				}
+			}
+		}
 	}
 }

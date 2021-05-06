@@ -50,13 +50,14 @@ function spawning(room) {
 		room.memory.creepcount.creepMax.minerMax = 2;
 		room.memory.creepcount.creepMax.scoutMax = 1;
 		room.memory.creepcount.creepMax.claimerMax = 0;
+		room.memory.creepcount.creepMax.mamabirdMax = 0;
 
 		room.memory.creepcount.creepCurrent.harvesters = 0;
 		room.memory.creepcount.creepCurrent.drones = 0;
 		room.memory.creepcount.creepCurrent.miners = 0;
 		room.memory.creepcount.creepCurrent.scouts = 0;
 		room.memory.creepcount.creepCurrent.claimers = 0;
-
+		room.memory.creepcount.creepCurrent.mamabirds = 0;
 	};
 
 	let cLevel = room.controller.level;
@@ -74,19 +75,23 @@ function spawning(room) {
 	let minerMax = room.memory.creepcount.creepMax.minerMax;
 	let scoutMax = room.memory.creepcount.creepMax.scoutMax;
 	let claimerMax = room.memory.creepcount.creepMax.claimerMax
-
+	let mamabirdMax = room.memory.creepcount.creepMax.mamabirdMax;
 
 	let roomHarvesters = _.sum(Game.creeps, (c) => c.memory.role == "harvester" && c.memory.homeRoom === room.name);
 	let roomDrones = _.sum(Game.creeps, (c) => c.memory.role == "drone" && c.memory.homeRoom === room.name);
 	let roomMiners = _.sum(Game.creeps, (c) => c.memory.role == "miner" && c.memory.homeRoom === room.name);
 	let roomScouts = _.sum(Game.creeps, (c) => c.memory.role == "scout" && c.memory.homeRoom === room.name);
 	let roomClaimers = _.sum(Game.creeps, (c) => c.memory.role == "claimer" && c.memory.homeRoom === room.name);
+	let roomMamabirds = _.sum(Game.creeps, (c) => c.memory.role == "mamabird" && c.memory.homeRoom === room.name);
 
 	room.memory.creepcount.creepCurrent.harvesters = roomHarvesters;
 	room.memory.creepcount.creepCurrent.drones = roomDrones;
 	room.memory.creepcount.creepCurrent.miners = roomMiners;
 	room.memory.creepcount.creepCurrent.scouts = roomScouts;
 	room.memory.creepcount.creepCurrent.claimers = roomClaimers;
+	room.memory.creepcount.creepCurrent.mamabirds = roomMamabirds;
+
+
 
 ///RoomBooters
 	let roomBooters
@@ -114,6 +119,8 @@ function spawning(room) {
 					role: "harvester",
 					targetRoom: room.name,
 					homeRoom: room.name,
+					task: '',
+					source: '',
 				},
 			}
 		);
@@ -136,6 +143,7 @@ function spawning(room) {
 					targetRoom: room.name,
 					homeRoom: room.name,
 					task: '',
+					source: '',
 				},
 			}
 		);
@@ -165,6 +173,7 @@ function spawning(room) {
 						targetRoom: bootTargetRoom,
 						homeRoom: bootTargetRoom,
 						task: '',
+						source: '',
 					},
 				}
 			);
@@ -250,7 +259,23 @@ function spawning(room) {
 		}
 	} // end miner
 
+	if (cLevel > 3 && roomMamabirds < mamabirdMax) {
 
+		//	console.log('test mamabirdCount', mamabirdCount)
+		let newName = "MamaBird-" + makeid(2); //Game.time;
+		let result = spawns[0].spawnCreep(getBody([CARRY, MOVE], room, 4 * cLevel), newName, {
+			memory: { role: "mamabird", targetRoom: room.name, homeRoom: room.name },
+		});
+		//Game.spawns['Spawn1'].spawnCreep([CARRY,MOVE,CARRY,MOVE,CARRY,MOVE], 'Ass', {memory: {role: 'hauler', targetRoom:  '', homeRoom: Game.spawns['Spawn1'].room.name}});
+		//console.log('Spawning harvester:', room, result)
+		if (result == OK) {
+			console.log('spawning ', newName, ' in <a href="#!/room/shard1/' + room.name + '">' + room.name + '</a>')
+			// room.memory.creepcount.mamabirdCount = room.memory.creepcount.mamabirdCount + 1;
+			return;
+		}
+
+
+	}
 
 	//                          CLAIMER SHIT
 	//cLevel > 4
