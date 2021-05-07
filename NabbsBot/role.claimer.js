@@ -4,7 +4,7 @@ var roleClaimer = {
     run: function (creep) {
         const claimerHome = creep.memory.homeRoom
         const targetRoom = creep.memory.targetRoom
-        
+       console.log(creep+'🔴Im in room'+creep.room )
         if (creep.pos.x * creep.pos.y === 0 || creep.pos.x === 49 || creep.pos.y === 49) {
             creep.travelTo(new RoomPosition(25, 25, creep.memory.targetRoom));
         }
@@ -41,7 +41,7 @@ var roleClaimer = {
                     var SpawnLocY = creep.room.memory.colonize.posY
                     //Game.rooms[claimerHome].memory.colonizeNext.spawnLoc;
                     creep.room.createFlag(SpawnLocX+3,SpawnLocY , 'Bootup');
-                   
+                  //  if (Game.flags.Bootup) {
                     // if (Game.flags.Bootup && Game.flags.Bootup.pos.roomName == creep.room.name) {
 
                     // } 
@@ -63,7 +63,7 @@ var roleClaimer = {
 
 
 
-
+                    creep.suicide();
 
 
                 }

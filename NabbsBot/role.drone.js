@@ -1,280 +1,285 @@
 var roleDrone = {
-
-    /** @param {Creep} creep **/
-    run: function (creep) {
-        var startCpu = Game.cpu.getUsed();
-
-        if (creep.pos.x * creep.pos.y === 0 || creep.pos.x === 49 || creep.pos.y === 49) {
-            creep.travelTo(new RoomPosition(25, 25, creep.memory.targetRoom));
-        }
+    //REDO STATE MACHINE
         
-
-
-        const targetRoom = creep.memory.targetRoom
-        //creep.memory.homeRoom =  creep.room.name
-        if (Game.flags.Bootup && Game.flags.Bootup.pos.roomName ==  creep.room.name) {
+        /** @param {Creep} creep **/
+        run: function (creep) {
+            const startCpu = Game.cpu.getUsed();
+        const creepsHomeRoom = creep.memory.homeRoom;
+        const creepsTargetRoom = creep.memory.targetRoom;
+            const Miners = _(Memory.creeps).filter({ role: 'miner', homeRoom: creep.room.name }).size();
+            const roomMamabirds = _(Memory.creeps).filter({ role: 'mamabird', homeRoom: creep.room.name }).size();
+            const upgradeTaskSet = _(Memory.creeps).filter({ task: 'upgradeController', homeRoom: creep.room.name }).size();
+        const buildTaskSet = _(Memory.creeps).filter({ task: 'buildStuff', homeRoom: creep.room.name }).size();
+      //  const buildTaskSet = _(Memory.creeps).filter({ task: 'buildStuff', homeRoom: creep.room.name }).size();
+      //  let thisRoomEnergy =  room.energyCapacityAvailable - room.energyAvailable
+     //   create a task when created to fill with energy before doing anything else  /creep.say('🚧 filling');
+    
+            // if yo dumass stuck at border MOVE
+            if (creep.pos.x * creep.pos.y === 0 || creep.pos.x === 49 || creep.pos.y === 49) {
+                creep.travelTo(new RoomPosition(25, 25, creep.memory.targetRoom));
+            }
+    
+            ///const targetRoom = creep.memory.targetRoom
+            //creep.memory.homeRoom =  creep.room.name
+            if (Game.flags.Bootup && Game.flags.Bootup.pos.roomName == creep.room.name) {
                 let spawns = creep.room.find(FIND_MY_SPAWNS);
-             //   console.log("spawn not build yet")
-                // // console.log(spawns[0])
+                //   console.log("spawn not build yet")
                 if (spawns[0] != undefined) {
                     console.log("spawn construction completed, removing Bootup flag")
                     Game.flags.Bootup.remove();
                     creep.room.memory.mode = "normal"
                 }
             }
-
-        //if (Game.flags.Bootup && Game.flags.Bootup.pos.roomName == targetRoom && targetRoom !== creep.room.name) {
-          
-          //  creep.travelTo(Game.flags.Bootup, { ensurePath: true, range: '2' });
-        //} else
-            if (targetRoom && targetRoom !== creep.room.name) {
-            const goHere = new RoomPosition(25, 25, targetRoom);
-            creep.travelTo(goHere, { useFindRoute: true, ensurePath: true, range: '2' });
-            //creep.travelToRoom(targetRoom);
-            //  console.log(creep, targetRoom)
-        } else {
-
-  
-            if (creep.memory.working && creep.store.getUsedCapacity() === 0) {
-                creep.memory.working = false;
-                //empty
-                creep.say('🔴Empty');
-                creep.memory.helperTarget = '';
-                creep.memory.task = 'getDropped';
-
-            }
-            if (!creep.memory.working && creep.store.getFreeCapacity() === 0) {
-                creep.memory.working = true;
-                //full
-                creep.say('🟢Full');// creep.say('🚧 filling');
-                creep.memory.targetContainerId = null;
-                creep.memory.task = 'depositSpawns';
-
-            }
-
-
-            //   let buildTaskSet = _.sum(Game.creeps, (c) => c.memory.task == "buildStuff" && c.room.name === creep.room.name);
-            //   let upgradeTaskSet = _.sum(Game.creeps, (c) => c.memory.task == "upgrade" && c.room.name === creep.room.name);
-            if (creep.memory.working) {
+            
+            if (creepsTargetRoom && creepsTargetRoom != creep.room.name) {
+                let goHere = new RoomPosition(25, 25, creepsTargetRoom);
+                creep.travelTo(goHere, { offroad: true, ensurePath: true, reusePath: 50 });
+                //creep.travelToRoom(creepsTargetRoom);
+                //  console.log(creep, creepsTargetRoom)
+                // if (creep.pos.x || creep.pos.y === 0 || creep.pos.x === 49 || creep.pos.y === 49) {
+                //     creep.travelTo(new RoomPosition(25, 25, creep.memory.creepsTargetRoom, { offroad: true, ensurePath: true, reusePath: 50}));
+                // }
+            } else {
+    
+            
+                ///  tank check
+            
+                // working == full
+                if (creep.memory.working === undefined) creep.memory.working = false;
+    
+                if (creep.memory.working && creep.store.getUsedCapacity() === 0) {
+                    creep.memory.working = false;
+                    creep.say('🔴Empty');
+                    creep.memory.task = 'getDropped';
+                }
+                if (!creep.memory.working && creep.store.getFreeCapacity() === 0) {
+                    creep.memory.working = true;
+                    creep.say('🟢Full');
+                    // creep.say('🚧 filling');
+                    //  creep.memory.targetContainerId = null;
+                    // if (creep.memory.task == 'getDropped') {
+                    //     creep.memory.task = 'depStorage';
+                    // } else {
+                    creep.memory.task = 'depositSpawns';
+                    // }        
+                }
+    
+                //state machine
+                // if (creep.store.getFreeCapacity() >= 20) {
                 
-                let roomMamabirds = _.sum(Game.creeps, (c) => c.memory.role == "mamabird"  && c.room.name === creep.room.name);
-             //   let upgradeTaskSet = _.sum(Game.creeps, (c) => c.memory.task == "upgradeController" && c.room.name === creep.room.name);
-                //_(Game.creeps).filter( { memory: { role: 'x' } } ).size();
-                // console.log(upgradeTaskSet)
-              // Using Memory.creeps
-                let upgradeTaskSet = _(Memory.creeps).filter({ task: 'upgradeController', homeRoom: creep.room.name }).size();
-                 let Miners = _(Memory.creeps).filter({ role: 'miner', homeRoom: creep.room.name }).size();
-         //  console.log(creep+ creep.room+'<span style="color: #FFFFFF; font - weight: bold; "> :::::'+countTest)
-
+                //     var energy = creep.pos.findInRange(FIND_DROPPED_RESOURCES, 3);
+    
+                //     //if(dumpTar != undefined) console.log(`dumpTar.store.energy(${dumpTar.store.energy}) > dumpTar.energyCapacity(${dumpTar.storeCapacity}) - 200`);
+                //     if (energy.length != 0 && energy[0].resourceType == RESOURCE_ENERGY && energy[0].amount > 20) {
+                //         //console.log('Picking up energy');
+                //         if (creep.pickup(energy[0]) != OK) {
+                //             creep.moveTo(energy[0]);
+                //         }
+                //     }
+    
+                // }
+                // Pickup really close dropped?
+                // get container
+                // get store     room.energyCapacityAvailable != room.energyAvailable
+                // harvest
                 const currentTask = creep.memory.task
                 switch (currentTask) {
                     case 'depositSpawns':
-                        if (upgradeTaskSet < 1) {
-                                creep.memory.task = 'upgradeController';
-                        } else if (roomMamabirds < 1) {
-                            if (creep.depSpawns() == false) {
-                                creep.memory.task = 'depositTowers';
-                            }
-
-                        } else {
-                            creep.memory.task = 'construction';
-                        }
-                     
-                        break;
                     case 'depositTowers':
-                        if (creep.depTowers() == false) {
-                            creep.memory.task = 'construction';
+                        if (!roomMamabirds && creep.room.energyCapacityAvailable != creep.room.energyAvailable) {
+                            if (creep.depSpawns() == false) {
+                                if (creep.depTowers() == false) {
+                                    creep.memory.task = 'construct';
+                                    creep.buildStuff();
+                                }
+                            }
+                        } else {
+                            creep.memory.task = 'construct';
+                            creep.buildStuff();
                         }
                         break;
-                    case 'construction':
-                        if (creep.buildStuff() == false) {
-                            if (upgradeTaskSet !== 0) {
-                                creep.memory.task = 'upgradeController';
-                            } else {
-                                creep.memory.task = 'depStorage';
+                    case 'construct':
+                        if (!upgradeTaskSet) {
+                            creep.memory.task = 'upgradeController';
+                            creep.upCont();
+                        } else {
+                            if (creep.buildStuff() == false) {
+                                if (creep.room.store) {
+                                    creep.memory.task = 'depStorage';
+                                    creep.depStorage();
+                                } else {
+                                    creep.memory.task = 'upgradeController';
+                                    creep.upCont();
+                                }
                             }
-                            
                         }
                         break;
                     case 'depStorage':
                         if (creep.room.store) {
                             let storeUsed = creep.room.storage.store.getUsedCapacity();
                             // console.log(storeUsed)
-                            if (storeUsed > 200000) {
+                            if (storeUsed > 500000) {
                                 creep.memory.task = 'upgradeController';
+                                creep.upCont();
                             } else {
                                 if (creep.depStorage() == false) {
                                     creep.memory.task = 'upgradeController';
+                                    creep.upCont();
                                 }
                             }
-                        } else {
-                            creep.memory.task = 'upgradeController';
-                        }
-                            break;
-                        
-                    case 'upgradeController':
-                        if (creep.upCont() == false) {
-                            creep.say('🚬💤')
                         }
                         break;
-                    default:
-                        // no task found
-                        console.log(creep + " in " + creep.room + " ::: No task assigned so im assigning depositSpawns")
-                        creep.memory.task = 'depositSpawns';
-                }
-            
-           
-
-
-                // if (creep.depTowers() == false) {
-                //     if (creep.depSpawns() == false) {
-                //         if (creep.buildStuff() == false) {
-                //             creep.upCont()
-                //         }
-                //     }
-                // }
-            } else {
-                //  ELSE NOT WORKING SO EMPTY
-                //creep.memory.task = 'harvestEnergy';
-                const currentTask = creep.memory.task
-                switch (currentTask) {
+                    case 'upgradeController':
+                        if(creep.upgradeController(creep.room.controller) == ERR_NOT_IN_RANGE) {
+                            creep.travelTo(creep.room.controller, {maxRooms: 1, reusePath: 50, visualizePathStyle: {stroke: '#ffffff'}}); 
+                        }
+                        // if (creep.upCont() == false) {
+                        //     creep.say('🚬💤')
+                        // }
+                        break;
+                    //               GET ENERGY         
                     case 'getDropped':
                         if (creep.getDroppedEnergy() == false) {
                             creep.memory.task = 'getContainer';
+                            creep.getContainerEnergy();
                         }
                         break;
+                
                     case 'getContainer':
                         if (creep.getContainerEnergy() == false) {
-                            creep.memory.task = 'getStorage';
+                            if (creep.room.store) {
+                                creep.memory.task = 'getStorage';
+                                creep.getStorage();
+                            } else {
+                                creep.memory.task = 'harvestEnergy';
+                                creep.harvestEnergy();
+                            }
                         }
-                  
-                        // if (creep.getContainerEnergy() == false) {
-                        //     creep.memory.task = 'harvestEnergy';
-                        // }
                         break;
+                
                     case 'getStorage':
                         if (creep.room.store) {
                             let storeUsed = creep.room.storage.store.getUsedCapacity();
                             // console.log(storeUsed)
                             if (storeUsed < 100000) {
                                 creep.memory.task = 'harvestEnergy';
+                                creep.harvestEnergy();
                             } else {
                                 if (creep.getStorage() == false) {
                                     creep.memory.task = 'harvestEnergy';
+                                    creep.harvestEnergy();
                                 }
                             }
                         } else {
-                                creep.memory.task = 'harvestEnergy';
+                             creep.memory.task = 'harvestEnergy';
+                                    creep.harvestEnergy();
                         }
                         break;
+                
                     case 'harvestEnergy':
                         if (creep.harvestEnergy() == false) {
                             creep.say('🚬💤')
+                            creep.memory.task = 'getDropped';
+                            creep.getDroppedEnergy();
                         }
                         break;
+                
                     default:
-                        // no task found
-                        console.log(creep + " in " + creep.room + " ::: No task assigned so im assigning getDropped")
-                        creep.memory.task = 'getDropped';
+    creep.memory.task = 'getDropped';
+                            creep.getDroppedEnergy();
+                    // no task found so get dropped
                 }
-            
-
-            }
-
-            let thismessage = '<span style="color: #FFFFFF; font - weight: bold; "> ::::: ' + creep.room
-            identifyProblem(startCpu, creep, thismessage);
     
-
-
-        }
-        
-    
-    }
-};
-module.exports = roleDrone;
-
-
-
-function identifyProblem(startCpu, creep, thismessage) {
-
-    const elapsed = Game.cpu.getUsed() - startCpu;
-    if (elapsed> .5000) {
-       // creep.say('DD'+elapsed.toFixed(4))
-        if (elapsed > 2) {
-            console.log('========><span style="color: #FF0000;font-weight: bold;">Creep ' + creep + ' has used ' + elapsed.toFixed(4) + ' CPU time:  Task = ' + creep.memory.task + thismessage); //red
-        } else {
-          //  console.log('========><span style="color: #00FF00;font-weight: bold;">Creep ' + creep + ' has used ' + elapsed.toFixed(4) + ' CPU time:  Task = ' + creep.memory.task + thismessage); //green
-        }
-    }
-}
-
- /// const elapsed = Game.cpu.getUsed() - startCpu;
-//console.log('========> <span style="color: #00FF00;font-weight: bold;">Creep ' + creep + ' has used ' + elapsed + ' CPU time'); //green
-
-
-
-
-
-
-
-
-
-// switch (currentTask) {
-//     case 'depSpawns':
-//         if (creep.depSpawns() == false) {
-//             creep.memory.task = 'depTowers';
-//             // console.log(creep + " : task depTowers")
-//         }
-//         break;
-//     case 'depTowers':
-//         if (creep.depTowers() == false) {
-//             // console.log("dronesRoomCurrent: " + dronesRoomCurrent)
-//             // if (buildTaskSet < (dronesRoomCurrent *.30) && constructionTargets.length ) {
-//             creep.memory.task = 'buildStuff';
-//             // console.log(creep + " : task buildStuff")
-//             // } else {
-//             //     creep.memory.task = 'upgrade';
-//             //    // console.log(creep + " : task upgrade")
-//             // }
-
-//         }
-//         break;
-//     case 'buildStuff':
-//         // console.log("buildTaskSet: " + buildTaskSet + " of " + dronesRoomCurrent)
-//         if (creep.buildStuff() == false) {
-//             creep.memory.task = 'depStorage';
-//             // console.log(creep + " : task depStorage")
-//         }
-//         break;
-//     case 'depStorage':
-//         if (creep.depStorage() == false) {
-//             creep.memory.task = 'upgrade';
-//             // console.log(creep + " : task upgrade")
-//         }
-//         break;
-//     case 'upgrade':
-//         //// console.log(creep, ' - upgrade task found... upgrading')
-//         if (creep.upgradeController(creep.room.controller) == ERR_NOT_IN_RANGE) {
-//             creep.moveTo(creep.room.controller, { reusePath: 50, visualizePathStyle: { stroke: '#ffffff' } });
-
-//         }
-//         if (creep.signController(creep.room.controller, "Welcome to NabbTech ") == ERR_NOT_IN_RANGE) {
-//             creep.moveTo(creep.room.controller, { visualizePathStyle: { stroke: '#E500FF' } });
-//         }
-//         break;
-//     default:
        
-//             creep.memory.task = 'depSpawns';
-        
-//     // if (creep.depSpawns() == false) {
-//     //     if (creep.depTowers() == false) {
-//     //         if (creep.buildStuff() == false) {
-//     //             if (creep.depStorage() == false) {
-//     //                 creep.memory.task = 'upgrade';
-
-//     //             }
-//     //         }
-//     //     }
-//     // }
-
-// }
+    
+                // let energy = creep.pos.findClosestByRange(FIND_DROPPED_RESOURCES);
+                // if (creep.pickup(energy) != OK) {
+                //     creep.moveTo(energy);
+                // }
+      
+                let thismessage = '<span style="color: #FFFFFF; font - weight: bold; "> ::::: ' + creep.room
+             //   identifyProblem(startCpu, creep, thismessage);
+            }
+        }
+    };
+    module.exports = roleDrone;
+    
+    
+    
+    function identifyProblem(startCpu, creep, thismessage) {
+    
+        const elapsed = Game.cpu.getUsed() - startCpu;
+        if (elapsed> .5000) {
+           // creep.say('DD'+elapsed.toFixed(4))
+            if (elapsed > 2) {
+                console.log('========><span style="color: #FF0000;font-weight: bold;">Creep ' + creep + ' has used ' + elapsed.toFixed(4) + ' CPU time:  Task = ' + creep.memory.task + thismessage); //red
+            } else {
+              //  console.log('========><span style="color: #00FF00;font-weight: bold;">Creep ' + creep + ' has used ' + elapsed.toFixed(4) + ' CPU time:  Task = ' + creep.memory.task + thismessage); //green
+            }
+        }
+    }
+    
+    
+    
+    
+    
+    
+    // // switch (currentTask) {
+    // //     case 'depSpawns':
+    // //         if (creep.depSpawns() == false) {
+    // //             creep.memory.task = 'depTowers';
+    // //             // console.log(creep + " : task depTowers")
+    // //         }
+    // //         break;
+    // //     case 'depTowers':
+    // //         if (creep.depTowers() == false) {
+    // //             // console.log("dronesRoomCurrent: " + dronesRoomCurrent)
+    // //             // if (buildTaskSet < (dronesRoomCurrent *.30) && constructionTargets.length ) {
+    // //             creep.memory.task = 'buildStuff';
+    // //             // console.log(creep + " : task buildStuff")
+    // //             // } else {
+    // //             //     creep.memory.task = 'upgrade';
+    // //             //    // console.log(creep + " : task upgrade")
+    // //             // }
+    
+    // //         }
+    // //         break;
+    // //     case 'buildStuff':
+    // //         // console.log("buildTaskSet: " + buildTaskSet + " of " + dronesRoomCurrent)
+    // //         if (creep.buildStuff() == false) {
+    // //             creep.memory.task = 'depStorage';
+    // //             // console.log(creep + " : task depStorage")
+    // //         }
+    // //         break;
+    // //     case 'depStorage':
+    // //         if (creep.depStorage() == false) {
+    // //             creep.memory.task = 'upgrade';
+    // //             // console.log(creep + " : task upgrade")
+    // //         }
+    // //         break;
+    // //     case 'upgrade':
+    // //         //// console.log(creep, ' - upgrade task found... upgrading')
+    // //         if (creep.upgradeController(creep.room.controller) == ERR_NOT_IN_RANGE) {
+    // //             creep.moveTo(creep.room.controller, { reusePath: 50, visualizePathStyle: { stroke: '#ffffff' } });
+    
+    // //         }
+    // //         if (creep.signController(creep.room.controller, "Welcome to NabbTech ") == ERR_NOT_IN_RANGE) {
+    // //             creep.moveTo(creep.room.controller, { visualizePathStyle: { stroke: '#E500FF' } });
+    // //         }
+    // //         break;
+    // //     default:
+           
+    // //             creep.memory.task = 'depSpawns';
+            
+    // //     // if (creep.depSpawns() == false) {
+    // //     //     if (creep.depTowers() == false) {
+    // //     //         if (creep.buildStuff() == false) {
+    // //     //             if (creep.depStorage() == false) {
+    // //     //                 creep.memory.task = 'upgrade';
+    
+    // //     //             }
+    // //     //         }
+    // //     //     }
+    // //     // }
+    
+    // // }

@@ -57,9 +57,6 @@ module.exports.loop = function () {
 // if(debug){
 //    start = Game.cpu.getUsed();
 // }
-
-
-
 		myrooms();
 	
 		//clearing memory of dead creep
@@ -115,7 +112,20 @@ if (Game.flags.cancel) {
 	const sites = Game.rooms[cancelRoomConstruction].find(FIND_CONSTRUCTION_SITES);
 	for (const site of sites) { site.remove(); }
 	Game.flags.cancel.remove();
-}
+		}
+		
+
+
+
+
+		if ((Game.time + 3) % 50 == 0) {
+			console.log("profile output ===================================================================================")
+			console.log(Game.profiler.output(1000));
+
+		}
+
+
+
 	}); //end of profiler
 };
 /// MAINLOOP END

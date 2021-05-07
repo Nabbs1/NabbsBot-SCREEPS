@@ -69,7 +69,7 @@ function spawning(room) {
 	
 	let dynamicDroneMax = 13
 //room.memory.creepcount.creepMax.droneMax = 6;
-
+//room.memory.creepcount.creepMax.harvesterMax = 4
 	let harvesterMax = room.memory.creepcount.creepMax.harvesterMax;
 	let droneMax = room.memory.creepcount.creepMax.droneMax;
 	let minerMax = room.memory.creepcount.creepMax.minerMax;
@@ -157,120 +157,6 @@ function spawning(room) {
 			return;
 		}
 	}
-///DRONE BOOTUP
-	///DRONE BOOTUP
-	///DRONE BOOTUP
-	///DRONE BOOTUP
-
-
-	if (Game.flags.Bootup) {
-		///RoomBooters
-	let roomBooters
-	let bootTargetRoom
-
-		bootTargetRoom = Game.flags.Bootup.pos.roomName
-		let bootMinerTargetRoom = Game.flags.Bootup.room
-		roomBooters = _(Memory.creeps).filter({ role: 'drone', homeRoom: bootTargetRoom }).size();
-			roomMineBooters = _(Memory.creeps).filter({ role: 'miner', homeRoom: bootTargetRoom }).size();
-	//	roomBooters = _.sum(Game.creeps, (c) => c.memory.role == "drone" && c.memory.homeRoom === bootTargetRoom);
-
-
-		// 	creep.memory.targetRoom = Game.flags.Bootup.pos.roomName;
-
-		// }
-		///DRONE BOOTUP  need a way to cap this.
-		if (cLevel > 2 && roomBooters < 8) {
-			let newName = "DB-"  + room.name+'_'+ makeid(2); //Game.time;
-			let result = spawns[0].spawnCreep(
-				getBody([WORK, CARRY, MOVE, MOVE], room),
-				newName,
-				{
-					memory: {
-						role: "drone",
-						targetRoom: bootTargetRoom,
-						homeRoom: bootTargetRoom,
-						task: '',
-						source: '',
-					},
-				}
-			);
-			//console.log('Spawning harvester:', room, result)
-			if (result == OK) {
-				console.log('<span style="color: #00FF00;font-weight: bold;">'+ room + 'spawning '+newName+' RoomBooter Drone: for bootup:'+bootTargetRoom)
-				return;
-			}
-		}
-		///DRONE BOOTUP MINER need a way to cap this.
-//THIS WORKS
-		//THIS WORKS
-		//THIS WORKS
-		// if (Game.flags.testFlag) {      //THIS WORKS
-
-	// 	testFlagRoom = Game.flags.testFlag.room
-	// 	console.log(testFlagRoom + '  ' + room)
-	
-	// 	console.log(bootMinerTargetRoom.memory.resources.energy.source_0)
-	// 		console.log(bootMinerTargetRoom.memory.resources.energy.source_1)
-	// 		//console.log(testFlagRoom)
-	// }
-		
-		
-		
-		if (roomMineBooters < 2 && cLevel > 4) {
-		let minerSource_0 = _.sum(Game.creeps, (c) => c.memory.mineTarget == "source_0" && c.memory.targetRoom === bootTargetRoom);
-		let minerSource_1 = '';
-
-		if (!minerSource_0) {
-			let sourceID = bootMinerTargetRoom.memory.resources.energy.source_0
-			var newName = "M00" + room.name// + makeid(2);
-			let result = spawns[0].spawnCreep(
-				[WORK, WORK, WORK, WORK, WORK, MOVE],
-				newName,
-				{
-					memory: {
-						role: "miner",
-						source: sourceID,
-						targetRoom: bootTargetRoom,
-						homeRoom: bootTargetRoom,
-						task: 'StripMine',
-						mineTarget: 'source_0',
-					},
-				}
-			);
-			//console.log('Spawning energyMiner:', room,source, result)
-			if (result == OK) {
-				console.log(room + 'spawning MINER 00:  for room '+bootMinerTargetRoom)
-				return;
-			}
-		} else {
-			let sourceID = bootMinerTargetRoom.memory.resources.energy.source_1
-			var newName = "M01" + room.name// + makeid(2);
-			let result = spawns[0].spawnCreep(
-				[WORK, WORK, WORK, WORK, WORK, MOVE],
-				newName,
-				{
-					memory: {
-						role: "miner",
-						source: sourceID,
-						targetRoom: bootTargetRoom,
-						homeRoom: bootTargetRoom,
-						task: 'StripMine',
-						mineTarget: 'source_1',
-					},
-				}
-			);
-			//console.log('Spawning energyMiner:', room,source, result)
-			if (result == OK) {
-				console.log(room + 'spawning MINER 01: for room '+bootMinerTargetRoom)
-				return;
-			}
-		}
-	} // end miner
-
-
-
-	} //end of bootup
-	
 	//SCOUTS
 	if (roomScouts < scoutMax && cLevel > 3) {
 		let newName = "S-" + room.name//makeid(2); //Game.time;
@@ -363,6 +249,10 @@ function spawning(room) {
 
 	}
 
+
+
+
+
 	//                          CLAIMER SHIT
 	//cLevel > 4
 	// if (Memory.NeedToExpand) {
@@ -390,24 +280,26 @@ function spawning(room) {
 //	console.log(thisIsNextRoom.room_name)
 // JSON.stringify(value),
 //console.log(mapLib.getGCLClaimsAvailable())
+
 const thisRoomSpawn = spawns[0]
 const myLevel = Game.gcl.level;
 const roomClaimsAvailable = mapLib.getGCLClaimsAvailable()
 const thisIsNextRoom = mapLib.getNextClaimableRoom( thisRoomSpawn );
 //console.log(myLevel+' of '+roomClaimsAvailable)
+
 	if (room.memory.colonizeNext) {
 		var claimRoom = room.memory.colonizeNext.name.name //null //
 		var roomScore = room.memory.colonizeNext.score;
 	}
+	if (!Game.flags.Bootup) {
+		if (roomClaimsAvailable > 0 && cLevel > 3 && thisIsNextRoom) {
+			//console.log(claimRoom + " : score " + roomScore)
+			room.memory.creepcount.creepMax.claimerMax = 1
+		} else {
+			room.memory.creepcount.creepMax.claimerMax = 0
+		}
 
-	if (roomClaimsAvailable > 0 && cLevel > 3 && thisIsNextRoom ) {
-		//console.log(claimRoom + " : score " + roomScore)
-		room.memory.creepcount.creepMax.claimerMax = 1
-	} else {
-		room.memory.creepcount.creepMax.claimerMax = 0
 	}
-
-
 	///claimer count needs to be global
 	// If(cLevel > 4 && claimRoom && roomScore > 5){
 
@@ -418,7 +310,7 @@ const thisIsNextRoom = mapLib.getNextClaimableRoom( thisRoomSpawn );
 
 	//	if (!room.controller.my && room.controller.owner === undefined) {
 
-	if (roomClaimers < claimerMax) {
+	if (roomClaimers < claimerMax &&Game.flags.Claim ) {
 		//var claimRoom =  room.memory.colonizeNext.name.name
 		// if (Game.flags.reserve) {
 		// 	var claimRoom = Game.flags.reserve.pos.roomName;
@@ -440,6 +332,126 @@ const thisIsNextRoom = mapLib.getNextClaimableRoom( thisRoomSpawn );
 		}
 	}
 
+///DRONE BOOTUP      NEED A WAY TO THROTTLE THIS SO THAT ONLY ONE ROOM IS BEING BOOTED AT A TIME>
+	///DRONE BOOTUP      ALSO NEED A WAY TO CHECK FOR ROOM OWNERSHIP WIHTOUT A SPAWN
+	///DRONE BOOTUP
+	///DRONE BOOTUP
+
+
+	if (Game.flags.Bootup &&Game.flags.Bootup123  ) {
+		///RoomBooters
+		let roomBooters
+		let bootTargetRoom = Game.flags.Bootup.pos.roomName; //this is name
+		let bootMinerTargetRoom = Game.flags.Bootup.room;   //  this is room object
+	//	console.log(bootMinerTargetRoom.memory.resources.energy.source_1)
+	
+
+	
+	//	let bootMinerTargetRoom = Game.flags.Bootup.room
+		roomBooters = _(Memory.creeps).filter({ role: 'drone', homeRoom: bootTargetRoom }).size();
+		roomMineBooters = _(Memory.creeps).filter({ role: 'miner', homeRoom: bootTargetRoom }).size();
+		
+	//	roomBooters = _.sum(Game.creeps, (c) => c.memory.role == "drone" && c.memory.homeRoom === bootTargetRoom);
+
+
+		// 	creep.memory.targetRoom = Game.flags.Bootup.pos.roomName;
+
+		// }
+		///DRONE BOOTUP  need a way to cap this.
+		if (cLevel > 2 && roomBooters < 5) {
+			let newName = "DB-"  + room.name+'_'+ makeid(2); //Game.time;
+			let result = spawns[0].spawnCreep(
+				getBody([WORK, CARRY, MOVE, MOVE], room),
+				newName,
+				{
+					memory: {
+						role: "drone",
+						targetRoom: bootTargetRoom,
+						homeRoom: bootTargetRoom,
+						task: '',
+						source: '',
+					},
+				}
+			);
+			//console.log('Spawning harvester:', room, result)
+			if (result == OK) {
+				console.log('<span style="color: #00FF00;font-weight: bold;">'+ room + 'spawning '+newName+' RoomBooter Drone: for bootup:'+bootTargetRoom)
+				return;
+			}
+		}
+		///DRONE BOOTUP MINER need a way to cap this.
+//THIS WORKS
+		//THIS WORKS
+		//THIS WORKS
+		// if (Game.flags.testFlag) {      //THIS WORKS
+
+	// 	testFlagRoom = Game.flags.testFlag.room
+	// 	console.log(testFlagRoom + '  ' + room)
+	
+	// 	console.log(bootMinerTargetRoom.memory.resources.energy.source_0)
+	// 		console.log(bootMinerTargetRoom.memory.resources.energy.source_1)
+	// 		//console.log(testFlagRoom)
+	// }
+		
+		
+		
+		if (roomMineBooters < 2 && cLevel > 4) {
+//		console.log(room + 'should be creating a MINER for room '+bootMinerTargetRoom)
+			let minerSource_0 = _.sum(Game.creeps, (c) => c.memory.mineTarget == "source_0" && c.memory.targetRoom == bootTargetRoom);
+			
+		let minerSource_1 = '';
+	//	console.log(room + 'should be creating a MINER for room '+bootMinerTargetRoom, minerSource_0,roomMineBooters)
+		if (!minerSource_0 &&bootTargetRoom.memory.resources ) {
+			let sourceID = bootTargetRoom.memory.resources.energy.source_0
+			var newName = "M00" + room.name// + makeid(2);
+			let result = spawns[0].spawnCreep(
+				[WORK, WORK, WORK, WORK, WORK, MOVE],
+				newName,
+				{
+					memory: {
+						role: "miner",
+						source: sourceID,
+						targetRoom: bootTargetRoom,
+						homeRoom: bootTargetRoom,
+						task: 'StripMine',
+						mineTarget: 'source_0',
+					},
+				}
+			);
+			//console.log('Spawning energyMiner:', room,source, result)
+			if (result == OK) {
+				console.log(room + 'spawning MINER 00:  for room '+bootMinerTargetRoom)
+				return;
+			}
+		} else {
+			let sourceID = bootMinerTargetRoom.memory.resources.energy.source_1
+			var newName = "M01" + room.name// + makeid(2);
+			let result = spawns[0].spawnCreep(
+				[WORK, WORK, WORK, WORK, WORK, MOVE, MOVE, MOVE, MOVE, MOVE],
+				newName,
+				{
+					memory: {
+						role: "miner",
+						source: sourceID,
+						targetRoom: bootTargetRoom,
+						homeRoom: bootTargetRoom,
+						task: 'StripMine',
+						mineTarget: 'source_1',
+					},
+				}
+			);
+			//console.log('Spawning energyMiner:', room,source, result)
+			if (result == OK) {
+				console.log(room + 'spawning MINER 01: for room '+bootMinerTargetRoom)
+				return;
+			}
+		}
+	} // end miner
+
+
+
+	} //end of bootup
+	
 
 
 
@@ -470,7 +482,7 @@ function getBody(segment, room) {
 	if (maxParts < maxSegments) {
 		maxSegments = maxParts;
 	}
-
+//	body.push(...basicBodyParts);
 	//push the segment loop
 	_.times(maxSegments, function () {
 		_.forEach(segment, (s) => body.push(s));

@@ -19,7 +19,7 @@ Creep.prototype.harvestEnergy = function harvestEnergy() {
 		if (this.pos.isNearTo(storedSource)) {
 			this.harvest(storedSource);
 		} else {
-			this.travelTo(storedSource);
+			this.travelTo(storedSource, {maxRooms: 1});
 		}
 	} else {
 		
@@ -30,7 +30,7 @@ Creep.prototype.harvestEnergy = function harvestEnergy() {
 };
 
 Creep.prototype.findEnergySource = function (stuffNthings) {
-	let reasonFor = stuffNthings || "none"
+	let reasonFor = stuffNthings // || "none"
 	let source = Game.getObjectById(this.memory.source);
 
 	if (!source) {
@@ -51,73 +51,6 @@ Creep.prototype.findEnergySource = function (stuffNthings) {
 };
 // end findEnergySource
 
-
-createRoadsFlags= function createRoadsFlags(Flag1, Flag2) {
-	//function createRoads(Flag1, Flag2){
-	// if (Game.flags.Flag1 && Game.flags.Flag2){
-	// //console.log('===================flag test', Flag1.pos.x, Flag1.pos.y)
-	if (!Flag1.room) {
-		//console.log("Flag1 room not visible : DELETING FLAG1");
-		Flag1.remove();
-	} else if (!Flag2.room) {
-		//console.log("Flag2 room not visible : DELETING FLAG2");
-		Flag2.remove();
-	} else {
-		var path = Flag1.pos.findPathTo(Flag2.pos, { ignoreCreeps: true });
-		//console.log("path: ", path);
-		for (var i = 0; i < path.length; i++) {
-			console.log(
-				"Building Road in ",
-				Flag1.room,
-				path[i].x,
-				path[i].y,
-				path[i]
-			);
-			Flag1.room.createConstructionSite(path[i].x, path[i].y, STRUCTURE_ROAD); //works
-			//createConstructionSite(10, 15, STRUCTURE_ROAD);
-
-			//const sites = Game.rooms['W43N39'].find(FIND_CONSTRUCTION_SITES); for (const site of sites) { site.remove(); }
-		}
-		Flag1.remove();
-		Flag2.remove();
-	}
-	////console.log(path)
-};
-// end createRoads
-
-
-createRoads = function createRoads(Flag1, Flag2) {
-	//function createRoads(Flag1, Flag2){
-	// if (Game.flags.Flag1 && Game.flags.Flag2){
-	// //console.log('===================flag test', Flag1.pos.x, Flag1.pos.y)
-	if (!Flag1.room) {
-		//console.log("Flag1 room not visible : DELETING FLAG1");
-		Flag1.remove();
-	} else if (!Flag2.room) {
-		//console.log("Flag2 room not visible : DELETING FLAG2");
-		Flag2.remove();
-	} else {
-		var path = Flag1.pos.findPathTo(Flag2.pos, { ignoreCreeps: true });
-		//console.log("path: ", path);
-		for (var i = 0; i < path.length; i++) {
-			console.log(
-				"Building Road in ",
-				Flag1.room,
-				path[i].x,
-				path[i].y,
-				path[i]
-			);
-			Flag1.room.createConstructionSite(path[i].x, path[i].y, STRUCTURE_ROAD); //works
-			//createConstructionSite(10, 15, STRUCTURE_ROAD);
-
-			//const sites = Game.rooms['W43N39'].find(FIND_CONSTRUCTION_SITES); for (const site of sites) { site.remove(); }
-		}
-		Flag1.remove();
-		Flag2.remove();
-	}
-	////console.log(path)
-};
-// end createRoads
 
 
 
@@ -159,11 +92,11 @@ Creep.prototype.depSpawns = function depSpawns() {
 		);
 	});
 	if (spawnOrExtentions.length) {
-		let energytarget = this.pos.findClosestByRange(spawnOrExtentions);
+		let energytarget = spawnOrExtentions[0] // this.pos.findClosestByRange(spawnOrExtentions);
 		if (this.pos.isNearTo(energytarget)) {
 			this.transfer(energytarget, RESOURCE_ENERGY);
 		} else {
-			this.travelTo(energytarget);  //, {				visualizePathStyle: { stroke: "#ffffff", opacity: 0.9 }});
+			this.travelTo(energytarget, {maxRooms: 1});  //, {				visualizePathStyle: { stroke: "#ffffff", opacity: 0.9 }});
 		
 		}
 	} else {
@@ -382,18 +315,13 @@ Creep.prototype.repairStuff = function repairStuff() {
 	}
 };
 
-
+// UPGRADE CONTROLLER
 Creep.prototype.upCont = function upCont() {
 	let cont = this.room.controller;
 	if (cont) {
 		this.travelTo(cont, { range: '3' });
 		this.upgradeController(cont);
-		// if (this.pos.isNearTo(cont)) {
-		// 	this.upgradeController(cont);
-		// } else {
-		// 	this.travelTo(cont);
-		// 		//this.travelTo(cont, { range: '2' });
-		// }
+	
 	} else {
 		return false;
 	}
@@ -401,20 +329,69 @@ Creep.prototype.upCont = function upCont() {
 };
 
 
-// // this could possibly work for dropped resources as well
-// const hostiles = creep.pos.findInRange(FIND_HOSTILE_CREEPS, 10);
-// if(hostiles.length > 0) {
-//     creep.say('OMG!😨');
-//     creep.moveTo(Game.spawns['Spawn1']);
-// }
-// else {
-//     doWork(creep);
-// }
+createRoadsFlags= function createRoadsFlags(Flag1, Flag2) {
+	//function createRoads(Flag1, Flag2){
+	// if (Game.flags.Flag1 && Game.flags.Flag2){
+	// //console.log('===================flag test', Flag1.pos.x, Flag1.pos.y)
+	if (!Flag1.room) {
+		//console.log("Flag1 room not visible : DELETING FLAG1");
+		Flag1.remove();
+	} else if (!Flag2.room) {
+		//console.log("Flag2 room not visible : DELETING FLAG2");
+		Flag2.remove();
+	} else {
+		var path = Flag1.pos.findPathTo(Flag2.pos, { ignoreCreeps: true });
+		//console.log("path: ", path);
+		for (var i = 0; i < path.length; i++) {
+			console.log(
+				"Building Road in ",
+				Flag1.room,
+				path[i].x,
+				path[i].y,
+				path[i]
+			);
+			Flag1.room.createConstructionSite(path[i].x, path[i].y, STRUCTURE_ROAD); //works
+			//createConstructionSite(10, 15, STRUCTURE_ROAD);
+
+			//const sites = Game.rooms['W43N39'].find(FIND_CONSTRUCTION_SITES); for (const site of sites) { site.remove(); }
+		}
+		Flag1.remove();
+		Flag2.remove();
+	}
+	////console.log(path)
+};
+// end createRoads
 
 
-// var sources = creep.pos.findClosestByPath(FIND_STRUCTURES, 
-// 	{filter: (s) => {return (s.structureType == STRUCTURE_CONTAINER && 
-// 	 s.store[RESOURCE_ENERGY] >= 150)
-// 	}});
-// 	sources.sort(function(a, b)  {return b.store[RESOURCE_ENERGY] - a.store[RESOURCE_ENERGY]});
+createRoads = function createRoads(Flag1, Flag2) {
+	//function createRoads(Flag1, Flag2){
+	// if (Game.flags.Flag1 && Game.flags.Flag2){
+	// //console.log('===================flag test', Flag1.pos.x, Flag1.pos.y)
+	if (!Flag1.room) {
+		//console.log("Flag1 room not visible : DELETING FLAG1");
+		Flag1.remove();
+	} else if (!Flag2.room) {
+		//console.log("Flag2 room not visible : DELETING FLAG2");
+		Flag2.remove();
+	} else {
+		var path = Flag1.pos.findPathTo(Flag2.pos, { ignoreCreeps: true });
+		//console.log("path: ", path);
+		for (var i = 0; i < path.length; i++) {
+			console.log(
+				"Building Road in ",
+				Flag1.room,
+				path[i].x,
+				path[i].y,
+				path[i]
+			);
+			Flag1.room.createConstructionSite(path[i].x, path[i].y, STRUCTURE_ROAD); //works
+			//createConstructionSite(10, 15, STRUCTURE_ROAD);
 
+			//const sites = Game.rooms['W43N39'].find(FIND_CONSTRUCTION_SITES); for (const site of sites) { site.remove(); }
+		}
+		Flag1.remove();
+		Flag2.remove();
+	}
+	////console.log(path)
+};
+// end createRoads

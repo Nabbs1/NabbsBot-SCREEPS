@@ -110,7 +110,7 @@ var roleScout = {
         }
 
             let thismessage = '<span style="color: #000000; font - weight: bold; "> ::::: ' + creep.room
-            identifyProblem(startCpu, creep, thismessage);
+         //   identifyProblem(startCpu, creep, thismessage);
        
     },
 };

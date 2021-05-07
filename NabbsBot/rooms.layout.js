@@ -3,7 +3,7 @@
 //var showVisuals = false;
 
 function layout(room) {
-console.log("Building in: "+room)
+//console.log("Building in: "+room)
     let spawns = room.find(FIND_MY_SPAWNS)
     let RoomLevel = room.controller.level;
     // console.log(RoomLevel + ' TEST LEVEL from Layout.js')
@@ -11,10 +11,17 @@ console.log("Building in: "+room)
     //  let SpawnLoc = Game.rooms[claimerHome].memory.colonizeNext.spawnLoc;
     //  Game.room.createConstructionSite(SpawnLoc, STRUCTURE_SPAWN)
     //   room.createConstructionSite(spawns[0].pos.x + 2, spawns[0].pos.y + 1, STRUCTURE_EXTENSION)
-    if (room.memory.colonize && !spawns) {
-        room.createConstructionSite(room.memory.colonize.posX, room.memory.colonize.posY, STRUCTURE_SPAWN)
+    // if (!Game.flags.Bootup2) {
+    //     if (room.memory.colonize && !spawns) {
+    //         creep.room.createFlag(room.memory.colonize.posX + 3, room.memory.colonize.posY, 'Bootup');
+  
+    //     }
+    // }
+    // if (Game.flags.Bootup || Game.flags.Bootup2) {
+    //     console.log(room)
+    //     room.createConstructionSite(room.memory.colonize.posX, room.memory.colonize.posY, STRUCTURE_SPAWN)
 
-    }
+    // }
     // console.log(  room.memory.colonize.posX ,room.memory.colonize.posY)
 
     if (RoomLevel == 2 && spawns.length > 0) {

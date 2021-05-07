@@ -2,48 +2,63 @@ var roleMiner = {
 
     /** @param {Creep} creep **/
     run: function (creep) {
-        //creep.travelTo(Game.flags.Flag1)
-        let storedSource = Game.getObjectById(creep.memory.source);
-        if (storedSource.energy == 0) {
 
-            // take a break while source rebuilds
-            creep.say('🚬 ' + storedSource.ticksToRegeneration)
+
+        if (creep.pos.x * creep.pos.y === 0 || creep.pos.x === 49 || creep.pos.y === 49) {
+            creep.travelTo(new RoomPosition(25, 25, creep.memory.targetRoom));
         }
-        if (creep.pos.isNearTo(storedSource)) {
-            creep.harvest(storedSource)
-            if (!creep.memory.onContainer) {
-                var closeContainer = creep.pos.findClosestByRange(FIND_STRUCTURES, {
-                    filter: (structure) => {
-                        return (structure.structureType == STRUCTURE_CONTAINER);// && (structure.store[RESOURCE_ENERGY] < structure.storeCapacity);
-                    }
-                });
-                if (closeContainer) {
-                    if (creep.pos.getRangeTo(closeContainer) < 3) {
-                        creep.travelTo(closeContainer)
-                    }
-                    if (creep.pos.getRangeTo(closeContainer) == 0) {
-                        creep.memory.onContainer = true;
-                        creep.memory.containerBuilt = true;
-                    }
-                } else {
-                   
-                    if (!creep.memory.containerBuilt) {
-                        creep.say('container?')
-                        //console.log(creep.pos.x)
-                        var result = creep.room.createConstructionSite(creep.pos.x, creep.pos.y, STRUCTURE_CONTAINER)
-                        //    Game.room.createConstructionSite(SpawnLoc, STRUCTURE_SPAWN)
-                        creep.memory.containerBuilt = true
-                        console.log(creep + " attempting to build a container in room: " + creep.room + " result: " + result)
-                        //     /// possible add create construction sigte here
-                    }
-    
-                }
-            }
+         const targetRoom = creep.memory.targetRoom
+        if (targetRoom && targetRoom !== creep.room.name) {
+            const goHere = new RoomPosition(25, 25, targetRoom);
+            creep.travelTo(goHere, { useFindRoute: true, ensurePath: true, range: '2' });
+            //creep.travelToRoom(targetRoom);
 
+         //   console.log(creep,creep.room, targetRoom)
         } else {
-            creep.travelTo(storedSource, { visualizePathStyle: { stroke: '#FF0000', lineStyle: 'dotted', opacity: .9 } });
-        }
 
+
+            //creep.travelTo(Game.flags.Flag1)
+            let storedSource = Game.getObjectById(creep.memory.source);
+            if (storedSource.energy == 0) {
+
+                // take a break while source rebuilds
+                creep.say('🚬 ' + storedSource.ticksToRegeneration)
+            }
+            if (creep.pos.isNearTo(storedSource)) {
+                creep.harvest(storedSource)
+                if (!creep.memory.onContainer) {
+                    var closeContainer = creep.pos.findClosestByRange(FIND_STRUCTURES, {
+                        filter: (structure) => {
+                            return (structure.structureType == STRUCTURE_CONTAINER);// && (structure.store[RESOURCE_ENERGY] < structure.storeCapacity);
+                        }
+                    });
+                    if (closeContainer) {
+                        if (creep.pos.getRangeTo(closeContainer) < 3) {
+                            creep.travelTo(closeContainer)
+                        }
+                        if (creep.pos.getRangeTo(closeContainer) == 0) {
+                            creep.memory.onContainer = true;
+                            creep.memory.containerBuilt = true;
+                        }
+                    } else {
+                   
+                        if (!creep.memory.containerBuilt) {
+                            creep.say('container?')
+                            //console.log(creep.pos.x)
+                            var result = creep.room.createConstructionSite(creep.pos.x, creep.pos.y, STRUCTURE_CONTAINER)
+                            //    Game.room.createConstructionSite(SpawnLoc, STRUCTURE_SPAWN)
+                            creep.memory.containerBuilt = true
+                            console.log(creep + " attempting to build a container in room: " + creep.room + " result: " + result)
+                            //     /// possible add create construction sigte here
+                        }
+    
+                    }
+                }
+
+            } else {
+                creep.travelTo(storedSource, { visualizePathStyle: { stroke: '#FF0000', lineStyle: 'dotted', opacity: .9 } });
+            }
+        }
 
     }
 };

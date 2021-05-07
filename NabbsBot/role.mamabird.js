@@ -8,9 +8,10 @@ var roleMamaBird = {
 		//var gotoBestStorLoc = new RoomPosition(BestStorLoc.x, BestStorLoc.y, creep.memory.targetRoom);
 		//console.log(creep.hitsMax)
 		if (creep.room.energyAvailable > 250 && creep.hitsMax > 599 && (creep.ticksToLive < 50 || creep.memory.nenew == true)) {
-			console.log('renew creep name/hps', creep, creep.hitsMax, ' <a href="#!/room/shard1/' + creep.room.name + '">' + creep.room.name + '</a>', creep.room.energyAvailable);
+		//	console.log('renew creep name/hps', creep, creep.hitsMax, ' <a href="#!/room/shard1/' + creep.room.name + '">' + creep.room.name + '</a>', creep.room.energyAvailable);
 			//console.log(creep.room.energyAvailable)
-			creep.say('🥴')
+			creep.say('😵‍💫')
+		//	creep.say('🥴😇😵‍💫')
 			creep.memory.nenew = true
 			// spawns = creep.room.find(FIND_MY_SPAWNS)
 			creep.travelTo(spawns[0]);
@@ -82,9 +83,9 @@ var roleMamaBird = {
 			} else {
 				//not working
 				/// get energy
-				let haulers = creep.room.memory.creepcount.creepCurrent.haulers;
-				let energyMiners = creep.room.memory.creepcount.creepCurrent.energyMiners;
-				let harvesters = creep.room.memory.creepcount.creepCurrent.harvesters;
+			//	let haulers = creep.room.memory.creepcount.creepCurrent.haulers;
+			//	let energyMiners = creep.room.memory.creepcount.creepCurrent.energyMiners;
+	//			let harvesters = creep.room.memory.creepcount.creepCurrent.harvesters;
 				if (creep.getStorage() == false) {
 					// find storage and stand near it
 
@@ -92,10 +93,7 @@ var roleMamaBird = {
 						//	creep.getContainerEnergy()
 						creep.getDroppedEnergy()
 						//getContHauler
-						if (haulers > 0 && energyMiners > 0) {
-							creep.say("🚬");//🚬
-							creep.travelTo(spawns[0]);
-						} else if (creep.getContainerEnergy() == false) {
+					 if (creep.getContainerEnergy() == false) {
 							creep.say("🤔");
 							//creep.travelTo(storageLoc);
 							creep.travelTo(spawns[0]);

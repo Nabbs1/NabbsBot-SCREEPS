@@ -22,8 +22,15 @@ function myrooms() {
 				// for (const site of sites) { site.remove(); }
 				// Game.flags.cancel.remove();
 			}
-
-
+			let spawns = room.find(FIND_MY_SPAWNS)
+			if (Game.flags.Bootup) {
+//	console.log('==============================>>>>>>>>>>>>>>'+Game.flags.Bootup.room,room.memory.colonize.posX + 3, room.memory.colonize.posY)
+	}
+		   if (room.memory.colonize && !spawns.length && !Game.flags.Bootup) {
+			   room.createFlag(20,20, 'Bootup');
+			   console.log('creating flag in ' + room)
+			    
+				    }
 
 			const RoomLevel = room.controller.level;
 
@@ -37,21 +44,29 @@ function myrooms() {
 
 			var myPcent = Math.round(((Game.gcl.progress / Game.gcl.progressTotal) * 100).toFixed(2));
 			var myLevel = Game.gcl.level;
-			if ((Game.time + 2) % 20 == 0) {
+			if ((Game.time + 2) % 50 == 0) {
 				identifySources(room);
 				layout(room);
 
-				console.log(room, roomPcent + "% | Level: ", RoomLevel);
+		//		console.log(room, roomPcent + "% | Level: ", RoomLevel);
 			//		console.log(room, roomPcent + "% | Level: ", RoomLevel);
 				let saveMyRoom = room.name
 				let checkMyRoom = Memory.MyRooms;
 
+				//array.indexOf(newItem) === -1 && array.push(newItem);
+				checkMyRoom.indexOf(saveMyRoom) === -1 && checkMyRoom.push(saveMyRoom)
+			//	console.log(saveMyRoom)
+			
+					//: console.log(saveMyRoom);
 
-				checkMyRoom.indexOf(saveMyRoom) === -1
-					? checkMyRoom.push(saveMyRoom)
-					: console.log("Room already saved");
+			}  //
 
-			}
+			// array.indexOf(newItem) === -1 ? array.push(newItem) : console.log("This item already exists");
+			//or
+			//	checkMyRoom.indexOf(saveMyRoom) === -1 && checkMyRoom.push(saveMyRoom)
+			// console.log(array)
+			
+			
 			roomDefense(room);
 
 			spawning(room);
@@ -78,9 +93,10 @@ function myrooms() {
 				let spawns = room.find(FIND_MY_SPAWNS);
 				if (spawns.length) {
 					let checkForNext = mapLib.getNextClaimableRoom(spawns[0]);
-					let  nextClaimRoom = checkForNext.room_name+' | spawn area:'+checkForNext.areaToBuild+' | source spots:'+checkForNext.sourcePoints
-					     room.visual.text("Next Claim: " + nextClaimRoom, Memory.visLocX, Memory.visLocY + 3, { align: "left", opacity: 0.5, color: "white", stroke: "black" });
-			     
+					if (checkForNext != undefined) {
+						let nextClaimRoom = checkForNext.room_name + ' | spawn area:' + checkForNext.areaToBuild + ' | source spots:' + checkForNext.sourcePoints
+						room.visual.text("Next Claim: " + nextClaimRoom, Memory.visLocX, Memory.visLocY + 3, { align: "left", opacity: 0.5, color: "white", stroke: "black" });
+					}
 				}
 			
 				//	let totalCreeps = _.sum(Game.creeps, (c) =>  c.memory.homeRoom === room.name);
