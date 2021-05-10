@@ -11,7 +11,7 @@ Creep.prototype.harvestEnergy = function harvestEnergy() {
 	let storedSource = Game.getObjectById(this.memory.source);
 	if (!storedSource || (!storedSource.pos.getOpenPositions().length && !this.pos.isNearTo(storedSource))) {
 		delete this.memory.source;
-		let stuffNthings = "didnt have source in memory or didnt have open positions left"
+		let stuffNthings = 'didnt have source in memory or didnt have open positions left';
 		storedSource = this.findEnergySource(stuffNthings);
 	}
 
@@ -19,18 +19,17 @@ Creep.prototype.harvestEnergy = function harvestEnergy() {
 		if (this.pos.isNearTo(storedSource)) {
 			this.harvest(storedSource);
 		} else {
-			this.travelTo(storedSource, {maxRooms: 1});
+			this.travelTo(storedSource, { maxRooms: 1 });
 		}
 	} else {
-		
 		delete this.memory.source;
-		let stuffNthings = "else - no energy in original source"
+		let stuffNthings = 'else - no energy in original source';
 		storedSource = this.findEnergySource(stuffNthings);
 	}
 };
 
 Creep.prototype.findEnergySource = function (stuffNthings) {
-	let reasonFor = stuffNthings // || "none"
+	let reasonFor = stuffNthings; // || "none"
 	let source = Game.getObjectById(this.memory.source);
 
 	if (!source) {
@@ -43,7 +42,7 @@ Creep.prototype.findEnergySource = function (stuffNthings) {
 		}
 	}
 	if (source) {
-	//	//console.log('found new source: ', source.id, ' : ', source.energy+'<span style="color: #00FF00;font-weight: bold;"> ::: reason: '+reasonFor)
+		//	//console.log('found new source: ', source.id, ' : ', source.energy+'<span style="color: #00FF00;font-weight: bold;"> ::: reason: '+reasonFor)
 		this.memory.source = source.id;
 
 		return source;
@@ -51,21 +50,11 @@ Creep.prototype.findEnergySource = function (stuffNthings) {
 };
 // end findEnergySource
 
-
-
-
-
-
-
-
-
-
 // functions for all creeps getting and dropping energy
 
 // functions for all creeps getting and dropping energy
 
 // functions for all creeps getting and dropping energy
-
 
 ////  DEPOSIT INTO STORAGE STOR
 Creep.prototype.depStorage = function depStorage() {
@@ -85,19 +74,14 @@ Creep.prototype.depStorage = function depStorage() {
 Creep.prototype.depSpawns = function depSpawns() {
 	let spawnOrExtentions = this.room.find(FIND_MY_STRUCTURES);
 	spawnOrExtentions = _.filter(spawnOrExtentions, function (struct) {
-		return (
-			(struct.structureType == STRUCTURE_EXTENSION ||
-				struct.structureType == STRUCTURE_SPAWN) &&
-			struct.store.getFreeCapacity(RESOURCE_ENERGY) > 0
-		);
+		return (struct.structureType == STRUCTURE_EXTENSION || struct.structureType == STRUCTURE_SPAWN) && struct.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
 	});
 	if (spawnOrExtentions.length) {
-		let energytarget = spawnOrExtentions[0] // this.pos.findClosestByRange(spawnOrExtentions);
+		let energytarget = spawnOrExtentions[0]; // this.pos.findClosestByRange(spawnOrExtentions);
 		if (this.pos.isNearTo(energytarget)) {
 			this.transfer(energytarget, RESOURCE_ENERGY);
 		} else {
-			this.travelTo(energytarget, {maxRooms: 1});  //, {				visualizePathStyle: { stroke: "#ffffff", opacity: 0.9 }});
-		
+			this.travelTo(energytarget, { maxRooms: 1 }); //, {				visualizePathStyle: { stroke: "#ffffff", opacity: 0.9 }});
 		}
 	} else {
 		return false;
@@ -107,13 +91,10 @@ Creep.prototype.depSpawns = function depSpawns() {
 Creep.prototype.depTowers = function depTowers() {
 	let towers = this.room.find(FIND_MY_STRUCTURES);
 	towers = _.filter(towers, function (struct) {
-		return (
-			struct.structureType == STRUCTURE_TOWER &&
-			struct.store.getFreeCapacity(RESOURCE_ENERGY) > 0
-		);
+		return struct.structureType == STRUCTURE_TOWER && struct.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
 	});
 	if (towers.length) {
-		let energytarget = towers[0];//this.pos.findClosestByRange(towers);
+		let energytarget = towers[0]; //this.pos.findClosestByRange(towers);
 		if (this.pos.isNearTo(energytarget)) {
 			this.transfer(energytarget, RESOURCE_ENERGY);
 		} else {
@@ -137,7 +118,7 @@ Creep.prototype.getStorage = function getStorage() {
 		if (this.pos.isNearTo(storage)) {
 			this.withdraw(storage, RESOURCE_ENERGY);
 		} else {
-			this.travelTo(storage);  //, { visualizePathStyle: { stroke: "#ffffff" } });
+			this.travelTo(storage); //, { visualizePathStyle: { stroke: "#ffffff" } });
 		}
 	} else {
 		return false;
@@ -166,14 +147,14 @@ Creep.prototype.getDroppedEnergy = function getDroppedEnergy(amountD, rangeD) {
 	}
 
 	if (denergy && this.pos.getRangeTo(denergy) < rangeD) {
-		this.say(this.pos.getRangeTo(denergy) + ":" + denergy.amount);
+		this.say(this.pos.getRangeTo(denergy) + ':' + denergy.amount);
 		if (this.pickup(denergy) == ERR_NOT_IN_RANGE) {
 			this.travelTo(denergy);
 			// this.room.visual.circle(this.pos,{fill: 'transparent', radius: 0.55, stroke: 'red'});
 			//creep.say('pickup');
 			this.room.visual.line(this.pos, denergy.pos, {
-				color: "red",
-				lineStyle: "dashed",
+				color: 'red',
+				lineStyle: 'dashed',
 			});
 			////console.log('pickup:'+denergy.amount);
 		}
@@ -187,56 +168,95 @@ Creep.prototype.getDroppedEnergy = function getDroppedEnergy(amountD, rangeD) {
 };
 
 ///////////////////////////////
-
-
-//This function looks for containers with energy and if it finds none it searches for ruins and loots them
-// removed ruins and made its own function.
-Creep.prototype.getContainerEnergy = function getContainerEnergy() {
-
-	var sources = this.room.find(FIND_STRUCTURES, {
-		filter: (structure) => {
-		    return (structure.structureType == STRUCTURE_CONTAINER);
+Creep.prototype.getContainerEnergy = function getContainerEnergy(maxRange) {
+	if (this.memory.targetContainerId == null) {
+		var sources = this.room.find(FIND_STRUCTURES, {
+			filter: (structure) => {
+				return structure.structureType == STRUCTURE_CONTAINER;
+			},
+		});
+		var maxAmount = -1;
+		var maxSource = null;
+		if (!maxRange) {
+			var maxRange = 100;
 		}
-	  });
-	  var maxAmount = -1;
-	  var maxSource = null;
-	  var maxRange = 100;
-	  for (var i = 0; i < sources.length; i++) {
-		if (sources[i].store[RESOURCE_ENERGY] >= maxAmount) {
-		    var range = this.pos.getRangeTo(sources[i]);
-		    if (sources[i].store[RESOURCE_ENERGY] > maxAmount || range < maxRange) {
-		    maxAmount = sources[i].store[RESOURCE_ENERGY];
-		    maxSource = sources[i];
-		    maxRange = range;
-		    }
+
+		for (var i = 0; i < sources.length; i++) {
+			if (sources[i].store[RESOURCE_ENERGY] >= maxAmount) {
+				var range = this.pos.getRangeTo(sources[i]);
+				if (sources[i].store[RESOURCE_ENERGY] > maxAmount || range < maxRange) {
+					maxAmount = sources[i].store[RESOURCE_ENERGY];
+					maxSource = sources[i];
+					maxRange = range;
+				}
+			}
 		}
-	  }
-	// //console.log(maxAmount);
-	if (!sources.length) {
-	return false;
-}
-
-
-
-	if (maxAmount > this.store.getCapacity()) {
-	
-	if(this.withdraw(maxSource, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-	  this.travelTo(maxSource)
+		//creep.store.getFreeCapacity() == 0
+		if (maxSource && maxSource.store[RESOURCE_ENERGY] > this.store.getFreeCapacity()) {
+			this.say(maxRange + ':' + maxSource.store[RESOURCE_ENERGY]);
+			this.memory.targetContainerId = maxSource.id;
+		} else {
+			this.memory.targetContainerId = null;
+		}
 	}
-
-
-
-
-
+	if (this.memory.targetContainerId != undefined) {
+		var energyTarget = Game.getObjectById(this.memory.targetContainerId);
+		// if there isnt enough to pickup find another target
+		if (!energyTarget) {
+			this.memory.targetContainerId = null;
+			return false;
+		}
+		if (energyTarget.store[RESOURCE_ENERGY] == 0) {
+			this.memory.targetContainerId = null;
+			//console.log('empty');|| creep.repair(source)
+		} else if (this.withdraw(energyTarget, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+			this.travelTo(energyTarget, { maxRooms: 1 });
+		}
+		//this.repair(energyTarget)
 	} else {
 		return false;
 	}
-//	return true;
+	return true;
 };
 
+// //This function looks for containers with energy and if it finds none it searches for ruins and loots them
+// // removed ruins and made its own function.
+// Creep.prototype.getContainerEnergy = function getContainerEnergy() {
 
+// 	var sources = this.room.find(FIND_STRUCTURES, {
+// 		filter: (structure) => {
+// 		    return (structure.structureType == STRUCTURE_CONTAINER);
+// 		}
+// 	  });
+// 	  var maxAmount = -1;
+// 	  var maxSource = null;
+// 	  var maxRange = 100;
+// 	  for (var i = 0; i < sources.length; i++) {
+// 		if (sources[i].store[RESOURCE_ENERGY] >= maxAmount) {
+// 		    var range = this.pos.getRangeTo(sources[i]);
+// 		    if (sources[i].store[RESOURCE_ENERGY] > maxAmount || range < maxRange) {
+// 		    maxAmount = sources[i].store[RESOURCE_ENERGY];
+// 		    maxSource = sources[i];
+// 		    maxRange = range;
+// 		    }
+// 		}
+// 	  }
+// 	// //console.log(maxAmount);
+// 	if (!sources.length) {
+// 	return false;
+// }
 
+// 	if (maxAmount > this.store.getCapacity()) {
 
+// 	if(this.withdraw(maxSource, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+// 	  this.travelTo(maxSource)
+// 	}
+
+// 	} else {
+// 		return false;
+// 	}
+// //	return true;
+// };
 
 // Creep.prototype.buildStuff = function buildStuff() {
 // 	var targets = this.room.find(FIND_CONSTRUCTION_SITES);
@@ -253,63 +273,55 @@ Creep.prototype.getContainerEnergy = function getContainerEnergy() {
 // };
 
 Creep.prototype.buildStuff = function buildStuff() {
-var targets = this.room.find(FIND_CONSTRUCTION_SITES);
-if (targets.length) {
-	dest = this.pos.findClosestByPath(targets);
-	if (this.build(dest) == ERR_NOT_IN_RANGE) {
-		this.travelTo(dest);
-	}
-} else {
-	return false;
-}
-};
-
-
-Creep.prototype.repairWall = function repairWall() {
-	const contLevel = this.room.controller.level;
-	let closestDamagedWall = this.room.find(FIND_STRUCTURES, {
-		filter: (wall) => {
-			return (wall.hits < 50000 * contLevel && (wall.structureType == STRUCTURE_WALL || wall.structureType == STRUCTURE_RAMPART))
-		},
-	})
-		.sort(function (a, b) {
-		return +a.hits - +b.hits;
-		})[0];
-	
-	 if (closestDamagedWall.length) {
-			if (this.repair(closestDamagedWall[0]) == ERR_NOT_IN_RANGE) {
-			this.travelTo(closestDamagedWall[0]);
+	var targets = this.room.find(FIND_CONSTRUCTION_SITES);
+	if (targets.length) {
+		dest = this.pos.findClosestByPath(targets);
+		if (this.build(dest) == ERR_NOT_IN_RANGE) {
+			this.travelTo(dest);
 		}
-
 	} else {
 		return false;
 	}
 };
 
-
-Creep.prototype.repairStuff = function repairStuff() {
+Creep.prototype.repairWall = function repairWall() {
 	const contLevel = this.room.controller.level;
-
-
-	let closestDamagedStructure =  this.room.find(FIND_STRUCTURES, {
-			filter: (structure) => {
-				return (
-					structure.hits < structure.hitsMax &&
-					structure.structureType != STRUCTURE_WALL &&
-					structure.structureType != STRUCTURE_RAMPART
-				);
+	let closestDamagedWall = this.room
+		.find(FIND_STRUCTURES, {
+			filter: (wall) => {
+				return wall.hits < 50000 * contLevel && (wall.structureType == STRUCTURE_WALL || wall.structureType == STRUCTURE_RAMPART);
 			},
 		})
 		.sort(function (a, b) {
 			return +a.hits - +b.hits;
 		})[0];
-////		
-		if (closestDamagedStructure.length) {
-			if (this.repair(closestDamagedStructure[0]) == ERR_NOT_IN_RANGE) {
-				this.travelTo(closestDamagedStructure[0]);
-			}
-		
 
+	if (closestDamagedWall.length) {
+		if (this.repair(closestDamagedWall[0]) == ERR_NOT_IN_RANGE) {
+			this.travelTo(closestDamagedWall[0]);
+		}
+	} else {
+		return false;
+	}
+};
+
+Creep.prototype.repairStuff = function repairStuff() {
+	const contLevel = this.room.controller.level;
+
+	let closestDamagedStructure = this.room
+		.find(FIND_STRUCTURES, {
+			filter: (structure) => {
+				return structure.hits < structure.hitsMax && structure.structureType != STRUCTURE_WALL && structure.structureType != STRUCTURE_RAMPART;
+			},
+		})
+		.sort(function (a, b) {
+			return +a.hits - +b.hits;
+		})[0];
+	////
+	if (closestDamagedStructure.length) {
+		if (this.repair(closestDamagedStructure[0]) == ERR_NOT_IN_RANGE) {
+			this.travelTo(closestDamagedStructure[0]);
+		}
 	} else {
 		return false;
 	}
@@ -321,15 +333,13 @@ Creep.prototype.upCont = function upCont() {
 	if (cont) {
 		this.travelTo(cont, { range: '3' });
 		this.upgradeController(cont);
-	
 	} else {
 		return false;
 	}
 	return true;
 };
 
-
-createRoadsFlags= function createRoadsFlags(Flag1, Flag2) {
+createRoadsFlags = function createRoadsFlags(Flag1, Flag2) {
 	//function createRoads(Flag1, Flag2){
 	// if (Game.flags.Flag1 && Game.flags.Flag2){
 	// //console.log('===================flag test', Flag1.pos.x, Flag1.pos.y)
@@ -343,13 +353,7 @@ createRoadsFlags= function createRoadsFlags(Flag1, Flag2) {
 		var path = Flag1.pos.findPathTo(Flag2.pos, { ignoreCreeps: true });
 		//console.log("path: ", path);
 		for (var i = 0; i < path.length; i++) {
-			console.log(
-				"Building Road in ",
-				Flag1.room,
-				path[i].x,
-				path[i].y,
-				path[i]
-			);
+			console.log('Building Road in ', Flag1.room, path[i].x, path[i].y, path[i]);
 			Flag1.room.createConstructionSite(path[i].x, path[i].y, STRUCTURE_ROAD); //works
 			//createConstructionSite(10, 15, STRUCTURE_ROAD);
 
@@ -361,7 +365,6 @@ createRoadsFlags= function createRoadsFlags(Flag1, Flag2) {
 	////console.log(path)
 };
 // end createRoads
-
 
 createRoads = function createRoads(Flag1, Flag2) {
 	//function createRoads(Flag1, Flag2){
@@ -377,13 +380,7 @@ createRoads = function createRoads(Flag1, Flag2) {
 		var path = Flag1.pos.findPathTo(Flag2.pos, { ignoreCreeps: true });
 		//console.log("path: ", path);
 		for (var i = 0; i < path.length; i++) {
-			console.log(
-				"Building Road in ",
-				Flag1.room,
-				path[i].x,
-				path[i].y,
-				path[i]
-			);
+			console.log('Building Road in ', Flag1.room, path[i].x, path[i].y, path[i]);
 			Flag1.room.createConstructionSite(path[i].x, path[i].y, STRUCTURE_ROAD); //works
 			//createConstructionSite(10, 15, STRUCTURE_ROAD);
 
